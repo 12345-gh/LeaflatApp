@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.543,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Unit1.pas=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Main.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.710,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Main.dfm=E:\github\LeaflatApp\V_2\Main.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.543,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Unit1.dfm=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Main.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.970,=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.710,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Main.pas=E:\github\LeaflatApp\V_2\Main.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.819,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\V_2.dproj=E:\github\LeaflatApp\V_2\V_2.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.421,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Project1.dproj=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\V_2.dproj</Transaction>
+  </Transactions>
+</BorlandProject>
