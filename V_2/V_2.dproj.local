@@ -1,12 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>1899.12.30 00:00:00.000.543,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Unit1.pas=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Main.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.710,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Main.dfm=E:\github\LeaflatApp\V_2\Main.dfm</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.543,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Unit1.dfm=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Main.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.367,E:\github\LeaflatApp\V_2\ufAddPushpin.pas=E:\github\LeaflatApp\V_2\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.367,E:\github\LeaflatApp\V_2\ufAddPushpin.dfm=E:\github\LeaflatApp\V_2\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.543,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Main.dfm=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.647,E:\github\LeaflatApp\V_2\mfAddPushpin.dfm=E:\github\LeaflatApp\V_2\ufAddPushpin.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.543,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Main.pas=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.710,E:\github\LeaflatApp\V_2\Main.pas=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Main.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.647,E:\github\LeaflatApp\V_2\mfAddPushpin.pas=E:\github\LeaflatApp\V_2\ufAddPushpin.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.819,E:\github\LeaflatApp\V_2\V_2.dproj=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\V_2.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.421,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\V_2.dproj=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.822,E:\github\LeaflatApp\V_2\mfgAddPushpin.dfm=E:\github\LeaflatApp\V_2\mfAddPushpin.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.674,=E:\github\LeaflatApp\V_2\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.128,E:\github\LeaflatApp\V_2\Unit1.pas=E:\github\LeaflatApp\V_2\ufmAddRoute.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.876,E:\github\LeaflatApp\V_2\ufmAddPushpin.dfm=E:\github\LeaflatApp\V_2\mfgAddPushpin.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.889,=E:\github\LeaflatApp\V_2\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.710,E:\github\LeaflatApp\V_2\Main.dfm=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Main.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.876,E:\github\LeaflatApp\V_2\ufmAddPushpin.pas=E:\github\LeaflatApp\V_2\mfgAddPushpin.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.822,E:\github\LeaflatApp\V_2\mfgAddPushpin.pas=E:\github\LeaflatApp\V_2\mfAddPushpin.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.970,=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.710,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Main.pas=E:\github\LeaflatApp\V_2\Main.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.819,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\V_2.dproj=E:\github\LeaflatApp\V_2\V_2.dproj</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.421,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Project1.dproj=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\V_2.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.128,E:\github\LeaflatApp\V_2\Unit1.dfm=E:\github\LeaflatApp\V_2\ufmAddRoute.dfm</Transaction>
   </Transactions>
 </BorlandProject>
