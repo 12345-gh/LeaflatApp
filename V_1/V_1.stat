@@ -2,9 +2,9 @@
 EditorSecs=48
 DesignerSecs=48
 InspectorSecs=57
-CompileSecs=20951
-OtherSecs=156
+CompileSecs=31580
+OtherSecs=112
 StartTime=11.04.2016 20:39:32
 RealKeys=0
 EffectiveKeys=0
-DebugSecs=132
+DebugSecs=200
