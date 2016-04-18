@@ -4,7 +4,8 @@ uses
   Vcl.Forms,
   Main in 'Main.pas' {MainForm},
   ufmAddPushpin in 'ufmAddPushpin.pas' {fmAddPushpin},
-  ufmAddRoute in 'ufmAddRoute.pas' {fmAddRoute};
+  ufmAddRoute in 'ufmAddRoute.pas' {fmAddRoute},
+  ufmAddRectangle in 'ufmAddRectangle.pas' {fmAddRectangle};
 
 {$R *.res}
 
@@ -14,5 +15,6 @@ begin
   Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TfmAddPushpin, fmAddPushpin);
   Application.CreateForm(TfmAddRoute, fmAddRoute);
+  Application.CreateForm(TfmAddRectangle, fmAddRectangle);
   Application.Run;
 end.

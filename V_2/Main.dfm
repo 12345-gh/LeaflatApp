@@ -98,10 +98,9 @@ object MainForm: TMainForm
       PopupMenu = PopupMenu1
       TabOrder = 0
       ZoomLevel = 10.000000000000000000
+      OnMouseDown = dxMapControl1MouseDown
       OnMouseMove = dxMapControl1MouseMove
       OnMouseUp = dxMapControl1MouseUp
-      ExplicitLeft = 15
-      ExplicitTop = -2
       object dxMapControl1ImageTileLayer1: TdxMapImageTileLayer
         ProviderClassName = 'TdxMapControlOpenStreetMapImageryDataProvider'
         Provider.Subdomains.Strings = (
@@ -663,6 +662,12 @@ object MainForm: TMainForm
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000}
     end
+    object dxBarLargeButton2: TdxBarLargeButton
+      Caption = 'New Button'
+      Category = 0
+      Hint = 'New Button'
+      Visible = ivAlways
+    end
   end
   object ActionList1: TActionList
     Left = 660
@@ -711,6 +716,10 @@ object MainForm: TMainForm
       Caption = #1057#1086#1079#1076#1072#1090#1100' '#1087#1088#1103#1084#1086#1091#1075#1086#1083#1100#1085#1080#1082
       OnExecute = actRectangleCreateExecute
     end
+    object actRectangleCreateCancel: TAction
+      Caption = #1054#1090#1084#1077#1085#1080#1090#1100' '#1089#1086#1079#1076#1072#1085#1080#1077' '#1087#1088#1103#1084#1086#1091#1075#1086#1083#1100#1085#1080#1082#1072
+      OnExecute = actRectangleCreateCancelExecute
+    end
   end
   object PopupMenu1: TPopupMenu
     OnPopup = PopupMenu1Popup
@@ -739,6 +748,9 @@ object MainForm: TMainForm
     end
     object N8: TMenuItem
       Action = actRectangleCreate
+    end
+    object N9: TMenuItem
+      Action = actRectangleCreateCancel
     end
   end
 end

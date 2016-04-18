@@ -29,7 +29,7 @@ uses
   Generics.Collections, dxMapItem, dxCustomMapItemLayer, dxMapItemLayer,
   dxMapLayer, dxMapImageTileLayer, dxMapControlOpenStreetMapImageryDataProvider,
   System.Actions, Vcl.ActnList, cxGeometry, cxListBox, Vcl.Menus, cxCheckBox,
-  dxCoreGraphics, Types, Math;
+  dxCoreGraphics, Types, Math, UITypes;
 
 {$REGION 'Pushpin'}
 type
@@ -123,6 +123,9 @@ type
     actRectangleAdd: TAction;
     actRectangleCreate: TAction;
     N8: TMenuItem;
+    dxBarLargeButton2: TdxBarLargeButton;
+    actRectangleCreateCancel: TAction;
+    N9: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure PopupMenu1Popup(Sender: TObject);
     procedure actPushpinAddExecute(Sender: TObject);
@@ -140,13 +143,18 @@ type
     procedure actRouteCreateExecute(Sender: TObject);
     procedure actRectangleAddExecute(Sender: TObject);
     procedure actRectangleCreateExecute(Sender: TObject);
+    procedure actRectangleCreateCancelExecute(Sender: TObject);
+    procedure dxMapControl1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   private
     { Private declarations }
 
     (*Variable*)
     FCurrentCursorPos : TPoint;
+    FMouseDown: Boolean;
+    FMouseMoveWhenMouseDown: Boolean;
 
-    {$REGION 'Pushpin'}
+    {$REGION 'Pushpin Variable'}
     FPushpin : TList<PushpinItem>;    // Main list of Pushpin
     FAddPushpin : Boolean;            // If press button on ribbon panel
     FSelectedPushpin : TdxMapPushpin; // Selected pushpin
@@ -154,7 +162,7 @@ type
     FMovePushpinOldGeopoint : TdxMapControlGeoPoint; // Geopoint before 'move' used
     {$ENDREGION}
 
-    {$REGION 'Route'}
+    {$REGION 'Route Variable'}
     FRoutes : TList<RouteItem>;       // Main list of routes
     FAddRoute  : Boolean;             // If press button on ribbon panel
 
@@ -164,7 +172,7 @@ type
     FSelectedMapDot : TdxMapDot;      // Selected MapDot
     {$ENDREGION}
 
-    {$REGION 'Route'}
+    {$REGION 'Route Variable'}
     FRectangles : TList<RectangleItem>; // Main list of rectangle
     FAddRectangle : Boolean;          // If press button on ribbon panel
 
@@ -174,17 +182,18 @@ type
 
     (*Procedure / Function*)
     function GetCurrentCursorGeoPoint : TdxMapControlGeoPoint;
+    procedure CheckAllActionsFalse;
     procedure SetAllActionsFalse;
 
-    {$REGION 'Pushpin'}
+    {$REGION 'Pushpin procedure / function'}
     procedure AddPushpin;
     {$ENDREGION}
 
-    {$REGION 'Route'}
+    {$REGION 'Route procedure / function'}
     procedure AddRoute;
     {$ENDREGION}
 
-    {$REGION 'Rectangle'}
+    {$REGION 'Rectangle procedure / function'}
     procedure AddRectangle;
     {$ENDREGION}
 
@@ -199,7 +208,7 @@ var
 implementation
 
 uses
-  ufmAddPushpin, ufmAddRoute;
+  ufmAddPushpin, ufmAddRoute, ufmAddRectangle;
 
 {$R *.dfm}
 
@@ -207,6 +216,45 @@ uses
 function TMainForm.GetCurrentCursorGeoPoint: TdxMapControlGeoPoint;
 begin
   Result := dxMapControl1ImageTileLayer1.ScreenPointToGeoPoint(dxPointDouble(FCurrentCursorPos));
+end;
+
+procedure TMainForm.CheckAllActionsFalse;
+const
+  QAddPushpin = 'Сохранить изменение добавления булавки?';
+  QAddRoute = 'Сохранить изменение добавления маршрута?';
+  QAddRectangle = 'Сохранить изменение добавления прямоугольника?';
+begin
+  {$REGION 'Pushpin'}
+  if ((FAddPushpin = True) and (FIDMovePushpin <> -1)) then begin
+    if (MessageDlg(QAddPushpin,mtConfirmation, mbOKCancel, 0) = mrOk) then begin
+      AddPushpin
+    end else begin
+      SetAllActionsFalse;
+    end;
+  end;
+  {$ENDREGION}
+
+  {$REGION 'Route'}
+  if ((FAddRoute = True) and (FIDSelectedRoute <> -1)) then begin
+    if (MessageDlg(QAddRoute,mtConfirmation, mbOKCancel, 0) = mrOk) then begin
+      actRouteCreateExecute(Self)
+    end else begin
+      actRouteCreateCancelExecute(Self);
+    end;
+  end;
+  {$ENDREGION}
+
+  {$REGION 'Rectangle'}
+  if ((FAddRectangle = True) and (FIDSelectedRectangle <> -1)) then begin
+    if (MessageDlg(QAddRectangle,mtConfirmation, mbOKCancel, 0) = mrOk) then begin
+      actRectangleCreateExecute(Self)
+    end else begin
+      actRectangleCreateCancelExecute(Self);
+    end;
+  end;
+  {$ENDREGION}
+
+  SetAllActionsFalse;
 end;
 
 procedure TMainForm.SetAllActionsFalse;
@@ -219,7 +267,7 @@ begin
   FIDSelectedMapDot := -1;
 
   FAddRectangle := False;
-  FIDSelectedRectangle := -1
+  FIDSelectedRectangle := -1;
 end;
 {$ENDREGION}
 
@@ -255,6 +303,7 @@ end;
 
 procedure TMainForm.actPushpinAddExecute(Sender: TObject);
 begin
+  CheckAllActionsFalse;
   SetAllActionsFalse;
   FAddPushpin := True;
 end;
@@ -311,6 +360,7 @@ end;
 {$REGION 'Route procedure / function'}
 procedure TMainForm.actRouteAddExecute(Sender: TObject);
 begin
+  CheckAllActionsFalse;
   SetAllActionsFalse;
   FAddRoute := True;
 end;
@@ -498,16 +548,85 @@ begin
 end;
 {$ENDREGION}
 
-{$REGION 'Rectangle'}
+{$REGION 'Rectangle procedure / function'}
 procedure TMainForm.actRectangleAddExecute(Sender: TObject);
 begin
+  CheckAllActionsFalse;
   SetAllActionsFalse;
   FAddRectangle := True;
 end;
 
-procedure TMainForm.actRectangleCreateExecute(Sender: TObject);
+procedure TMainForm.actRectangleCreateCancelExecute(Sender: TObject);
+var
+  I: integer;
 begin
-  SetAllActionsFalse;
+  if ((FAddRectangle) and (FIDSelectedRectangle <> -1))
+  then begin
+    for I:=0 to dxMapControl1.Layers.Count-1 do begin
+      if (dxMapControl1.Layers[I].Equals(FRectangles[FIDSelectedRectangle].trtLayer) = True) then begin
+        dxMapControl1.Layers.Delete(I);
+        Break;
+      end;
+    end;
+
+    FRectangles.Delete(FIDSelectedRectangle);
+    FRectangles.TrimExcess;
+
+    SetAllActionsFalse;
+  end;
+end;
+
+procedure TMainForm.actRectangleCreateExecute(Sender: TObject);
+const
+  AlphaChannel = 100;
+var
+  AfmAddRectangle: TfmAddRectangle;
+  ARectangleItem : RectangleItem;
+  ACustomElementGeoPoint: TdxMapControlGeoPoint;
+begin
+  if ((FAddRectangle) and (FIDSelectedRectangle <> -1)) then begin
+    Application.CreateForm(TfmAddRectangle, AfmAddRectangle);
+    if AfmAddRectangle.ShowModal=mrOk then begin
+
+      ARectangleItem:=FRectangles[FIDSelectedRectangle];
+
+
+      with ARectangleItem do begin
+        trtRectangleName:= AfmAddRectangle.cxteName.Text;;
+        trtRectangleType:= AfmAddRectangle.cxteType.Text;
+        trtRectangleColor:= dxColorToAlphaColor(AfmAddRectangle.dxceColor.ColorValue, AlphaChannel);
+
+        trtLayer.MapItems.BeginUpdate;
+
+        trtCustomElement:= trtLayer.MapItems.Add(TdxMapCustomElement) as TdxMapCustomElement;
+        ACustomElementGeoPoint.Latitude:= trtRectangle.GeoPoints.Items[0].GeoPoint.Latitude;
+        ACustomElementGeoPoint.Longitude:= trtRectangle.GeoPoints.Items[0].GeoPoint.Longitude+0.025;
+        trtCustomElement.Location.GeoPoint:= ACustomElementGeoPoint;
+        trtCustomElement.Text:= trtRectangleName;
+        trtCustomElement.ImageVisible:= False;
+        trtCustomElement.Visible:= True;
+
+        trtRectangle.Style.Color:= trtRectangleColor; // SelectedColor
+        trtRectangle.Style.BorderColor:= trtRectangleColor;
+        trtRectangle.Style.BorderWidth := 1;
+        trtRectangle.StyleHot.Color:= trtRectangleColor; // SelectedColor
+        trtRectangle.StyleHot.BorderColor:= trtRectangleColor;
+        trtRectangle.StyleHot.BorderWidth := 1;
+        trtRectangle.StyleSelected.Color:= trtRectangleColor; // SelectedColor
+        trtRectangle.StyleSelected.BorderColor:= trtRectangleColor;
+        trtRectangle.StyleSelected.BorderWidth := 1;
+        trtRectangle.Visible:= True;
+
+        trtLayer.MapItems.EndUpdate;
+      end;
+
+      FRectangles[FIDSelectedRectangle]:= ARectangleItem;
+    end;
+
+    SetAllActionsFalse;
+    AfmAddRectangle.Destroy;
+    AfmAddRectangle:=nil;
+  end;
 end;
 
 procedure TMainForm.AddRectangle;
@@ -515,67 +634,83 @@ var
   ARectangleItem : RectangleItem;
 begin
   if (FIDSelectedRectangle = -1) then begin
-    ARectangleItem.trtRectangleName:= '';
-    ARectangleItem.trtRectangleType:= '';
-    ARectangleItem.trtRectangleColor:= $3F777700; //Green
+    with ARectangleItem do begin
+      trtRectangleName:= '';
+      trtRectangleType:= '';
+      trtRectangleColor:= $3F770000; //Red
 
-    ARectangleItem.trtLayer:= dxMapControl1.AddItemLayer as TdxMapItemLayer;
-    ARectangleItem.trtLayer.MapItems.BeginUpdate;
+      trtLayer:= dxMapControl1.AddItemLayer as TdxMapItemLayer;
+      trtLayer.MapItems.BeginUpdate;
 
-    ARectangleItem.trtRectangle:= ARectangleItem.trtLayer.MapItems.Add(TdxMapPolygon) as TdxMapPolygon;
-    ARectangleItem.trtRectangle.GeoPoints.Add.GeoPoint:= CurrentCursorGeoPoint;
-    ARectangleItem.trtRectangle.GeoPoints.Add.GeoPoint:= CurrentCursorGeoPoint;
-    ARectangleItem.trtRectangle.GeoPoints.Add.GeoPoint:= CurrentCursorGeoPoint;
-    ARectangleItem.trtRectangle.GeoPoints.Add.GeoPoint:= CurrentCursorGeoPoint;
+      trtRectangle:= trtLayer.MapItems.Add(TdxMapPolygon) as TdxMapPolygon;
+      trtRectangle.GeoPoints.Add.GeoPoint:= CurrentCursorGeoPoint;
+      trtRectangle.GeoPoints.Add.GeoPoint:= CurrentCursorGeoPoint;
+      trtRectangle.GeoPoints.Add.GeoPoint:= CurrentCursorGeoPoint;
+      trtRectangle.GeoPoints.Add.GeoPoint:= CurrentCursorGeoPoint;
 
-    ARectangleItem.trtRectangle.Style.Color:= ARectangleItem.trtRectangleColor; //Green
-    ARectangleItem.trtRectangle.Style.BorderColor:= ARectangleItem.trtRectangleColor; //Green
-    ARectangleItem.trtRectangle.Style.BorderWidth := 1;
-    ARectangleItem.trtRectangle.StyleHot.Color:= $3F007777; //
-    ARectangleItem.trtRectangle.StyleHot.BorderColor:= $3F007777; //
-    ARectangleItem.trtRectangle.StyleHot.BorderWidth := 1;
-    ARectangleItem.trtRectangle.StyleSelected.Color:= $3F770077; //
-    ARectangleItem.trtRectangle.StyleSelected.BorderColor:= $3F770077; //
-    ARectangleItem.trtRectangle.StyleSelected.BorderWidth := 1;
-    ARectangleItem.trtRectangle.Visible:= True;
+      trtRectangle.Style.Color:= trtRectangleColor; //Red
+      trtRectangle.Style.BorderColor:= trtRectangleColor; //Red
+      trtRectangle.Style.BorderWidth := 1;
+      trtRectangle.StyleHot.Color:= trtRectangleColor; //Red
+      trtRectangle.StyleHot.BorderColor:= trtRectangleColor; //Red
+      trtRectangle.StyleHot.BorderWidth := 1;
+      trtRectangle.StyleSelected.Color:= trtRectangleColor; //Red
+      trtRectangle.StyleSelected.BorderColor:= trtRectangleColor; //Red
+      trtRectangle.StyleSelected.BorderWidth := 1;
+      trtRectangle.Visible:= True;
 
-    ARectangleItem.trtLayer.Visible:= True;
-    ARectangleItem.trtLayer.MapItems.EndUpdate;
+      trtLayer.Visible:= True;
+      trtLayer.MapItems.EndUpdate;
+    end;
 
     FRectangles.Add(ARectangleItem);
 
     FIDSelectedRectangle := FRectangles.Count-1;
   end;
+
 end;
 {$ENDREGION}
+
+
+procedure TMainForm.dxMapControl1MouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  FMouseDown:= True;
+end;
 
 procedure TMainForm.dxMapControl1MouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
+  FMouseDown:= False;
   FCurrentCursorPos := Point(X, Y);
 
   {$REGION 'Pushpin'}
-  if FAddPushpin then begin
+  if ((FAddPushpin) and (FMouseMoveWhenMouseDown = False)) then begin
     AddPushpin;
   end;
   {$ENDREGION}
 
   {$REGION 'Route'}
-  if FAddRoute then begin
+  if ((FAddRoute) and (FMouseMoveWhenMouseDown = False)) then begin
     AddRoute;
   end;
   {$ENDREGION}
 
   {$REGION 'Rectangle'}
-  if FAddRectangle then begin
+  if ((FAddRectangle) and (FMouseMoveWhenMouseDown = False)) then begin
     AddRectangle;
   end;
   {$ENDREGION}
+
+  FMouseMoveWhenMouseDown:= False;
 end;
 
 procedure TMainForm.dxMapControl1MouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
 begin
+  if FMouseDown = True then begin
+    FMouseMoveWhenMouseDown:= True;
+  end;
 
   {$REGION 'Pushpin'}
   if (FIDMovePushpin <> -1) then begin
@@ -597,8 +732,8 @@ begin
   then begin
     FCurrentCursorPos:= Point(X, Y);
 
-    //////HERE
-
+    //0   1
+    //3   2
     FRectangles[FIDSelectedRectangle].trtRectangle.GeoPoints[1].GeoPoint:=
       dxMapControl1ImageTileLayer1.ScreenPointToGeoPoint(dxPointDouble(Point(X,
         Trunc(dxMapControl1ImageTileLayer1.GeoPointToScreenPoint(FRectangles[FIDSelectedRectangle].trtRectangle.GeoPoints[0].GeoPoint).Y)
@@ -657,6 +792,7 @@ begin
 
   {$REGION 'Rectangle'}
   actRectangleCreate.Visible := (FAddRectangle) and (FRectangles[FIDSelectedRectangle].trtRectangle.GeoPoints.Count-1 >= 3);
+  actRectangleCreateCancel.Visible := (FAddRectangle) and (FRectangles[FIDSelectedRectangle].trtRectangle.GeoPoints.Count-1 >= 3);
   {$ENDREGION}
 end;
 

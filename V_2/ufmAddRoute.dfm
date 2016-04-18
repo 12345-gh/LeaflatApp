@@ -76,14 +76,14 @@ object fmAddRoute: TfmAddRoute
   end
   object dxceColor: TdxColorEdit
     Left = 112
-    Top = 55
+    Top = 53
     ColorValue = clMenuHighlight
     TabOrder = 5
     Width = 257
   end
   object cxlbColor: TcxLabel
     Left = 40
-    Top = 57
+    Top = 55
     Caption = #1062#1074#1077#1090
   end
 end
