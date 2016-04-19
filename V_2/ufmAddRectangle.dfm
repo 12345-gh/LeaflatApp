@@ -50,8 +50,6 @@ object fmAddRectangle: TfmAddRectangle
     Height = 41
     Align = alBottom
     TabOrder = 4
-    ExplicitTop = 119
-    ExplicitWidth = 425
     DesignSize = (
       426
       41)
@@ -64,7 +62,6 @@ object fmAddRectangle: TfmAddRectangle
       Caption = 'OK'
       TabOrder = 0
       OnClick = cxbtOKClick
-      ExplicitLeft = 259
     end
     object cxbtCancel: TcxButton
       Left = 341
@@ -74,7 +71,7 @@ object fmAddRectangle: TfmAddRectangle
       Anchors = [akRight, akBottom]
       Caption = 'Cancel'
       TabOrder = 1
-      ExplicitLeft = 340
+      OnClick = cxbtCancelClick
     end
   end
   object dxceColor: TdxColorEdit

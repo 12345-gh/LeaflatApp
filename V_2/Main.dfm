@@ -95,12 +95,13 @@ object MainForm: TMainForm
       Align = alClient
       CenterPoint.Longitude = 33.400000000000000000
       CenterPoint.Latitude = 47.900000000000000000
-      PopupMenu = PopupMenu1
       TabOrder = 0
       ZoomLevel = 10.000000000000000000
       OnMouseDown = dxMapControl1MouseDown
       OnMouseMove = dxMapControl1MouseMove
       OnMouseUp = dxMapControl1MouseUp
+      ExplicitLeft = 15
+      ExplicitTop = -2
       object dxMapControl1ImageTileLayer1: TdxMapImageTileLayer
         ProviderClassName = 'TdxMapControlOpenStreetMapImageryDataProvider'
         Provider.Subdomains.Strings = (
@@ -721,8 +722,8 @@ object MainForm: TMainForm
       OnExecute = actRectangleCreateCancelExecute
     end
   end
-  object PopupMenu1: TPopupMenu
-    OnPopup = PopupMenu1Popup
+  object ppmMapControl: TPopupMenu
+    OnPopup = ppmMapControlPopup
     Left = 584
     Top = 376
     object N1: TMenuItem

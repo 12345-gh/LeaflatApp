@@ -37,6 +37,7 @@ type
     procedure cxbtOKClick(Sender: TObject);
     procedure cxteNamePropertiesChange(Sender: TObject);
     procedure cxteTypePropertiesChange(Sender: TObject);
+    procedure cxbtCancelClick(Sender: TObject);
   private
     { Private declarations }
     function CheckValid: boolean;
@@ -72,6 +73,11 @@ begin
     ShowMessage('Заполните поля: '+HintText);
     Result:= False;
   end;
+end;
+
+procedure TfmAddRectangle.cxbtCancelClick(Sender: TObject);
+begin
+  ModalResult:=mrCancel;
 end;
 
 procedure TfmAddRectangle.cxbtOKClick(Sender: TObject);

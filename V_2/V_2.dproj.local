@@ -3,27 +3,34 @@
 	<Transactions>
     <Transaction>1899.12.30 00:00:00.000.647,E:\github\LeaflatApp\V_2\ufAddPushpin.dfm=E:\github\LeaflatApp\V_2\mfAddPushpin.dfm</Transaction>
     <Transaction>1899.12.30 00:00:00.000.710,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Main.pas=E:\github\LeaflatApp\V_2\Main.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.647,E:\github\LeaflatApp\V_2\ufAddPushpin.pas=E:\github\LeaflatApp\V_2\mfAddPushpin.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.239,E:\github\LeaflatApp\V_2\ufmAddRectangle.pas=E:\github\LeaflatApp\V_2\Unit1.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.710,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Main.dfm=E:\github\LeaflatApp\V_2\Main.dfm</Transaction>
     <Transaction>1899.12.30 00:00:00.000.822,E:\github\LeaflatApp\V_2\mfAddPushpin.dfm=E:\github\LeaflatApp\V_2\mfgAddPushpin.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.647,E:\github\LeaflatApp\V_2\ufAddPushpin.pas=E:\github\LeaflatApp\V_2\mfAddPushpin.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.822,E:\github\LeaflatApp\V_2\mfAddPushpin.pas=E:\github\LeaflatApp\V_2\mfgAddPushpin.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.128,E:\github\LeaflatApp\V_2\ufmAddRoute.dfm=E:\github\LeaflatApp\V_2\Unit1.dfm</Transaction>
     <Transaction>1899.12.30 00:00:00.000.543,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Unit1.dfm=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Main.dfm</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.822,E:\github\LeaflatApp\V_2\mfAddPushpin.pas=E:\github\LeaflatApp\V_2\mfgAddPushpin.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.819,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\V_2.dproj=E:\github\LeaflatApp\V_2\V_2.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.239,E:\github\LeaflatApp\V_2\ufmAddRectangle.dfm=E:\github\LeaflatApp\V_2\Unit1.dfm</Transaction>
     <Transaction>1899.12.30 00:00:00.000.421,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Project1.dproj=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\V_2.dproj</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.367,E:\github\LeaflatApp\V_2\Unit1.dfm=E:\github\LeaflatApp\V_2\ufAddPushpin.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.490,=E:\github\LeaflatApp\V_2\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.378,=E:\github\LeaflatApp\V_2\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.573,E:\github\LeaflatApp\V_2\Unit1.pas=E:\github\LeaflatApp\V_2\PopupMenu\RCPopupMenu.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.367,E:\github\LeaflatApp\V_2\Unit1.pas=E:\github\LeaflatApp\V_2\ufAddPushpin.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.889,=E:\github\LeaflatApp\V_2\Unit1.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.674,=E:\github\LeaflatApp\V_2\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.543,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Unit1.pas=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Main.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.367,E:\github\LeaflatApp\V_2\Unit1.dfm=E:\github\LeaflatApp\V_2\ufAddPushpin.dfm</Transaction>
     <Transaction>1899.12.30 00:00:00.000.876,E:\github\LeaflatApp\V_2\mfgAddPushpin.pas=E:\github\LeaflatApp\V_2\ufmAddPushpin.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.876,E:\github\LeaflatApp\V_2\mfgAddPushpin.dfm=E:\github\LeaflatApp\V_2\ufmAddPushpin.dfm</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.970,=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.128,E:\github\LeaflatApp\V_2\ufmAddRoute.pas=E:\github\LeaflatApp\V_2\Unit1.pas</Transaction>
-    <Transaction>2016.04.18 21:41:37.490,=E:\github\LeaflatApp\V_2\Unit1.pas</Transaction>
-    <Transaction>2016.04.18 21:42:28.239,E:\github\LeaflatApp\V_2\ufmAddRectangle.pas=E:\github\LeaflatApp\V_2\Unit1.pas</Transaction>
-    <Transaction>2016.04.18 21:42:28.239,E:\github\LeaflatApp\V_2\ufmAddRectangle.dfm=E:\github\LeaflatApp\V_2\Unit1.dfm</Transaction>
-  </Transactions>  <ProjectSortOrder AutoSort="0" SortType="0">
+    <Transaction>1899.12.30 00:00:00.000.970,=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.876,E:\github\LeaflatApp\V_2\mfgAddPushpin.dfm=E:\github\LeaflatApp\V_2\ufmAddPushpin.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.543,C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Unit1.pas=C:\Users\Igor\Documents\Embarcadero\Studio\Projects\Main.pas</Transaction>
+    <Transaction>2016.04.19 21:37:47.194,=E:\github\LeaflatApp\V_2\RCPopupMenu\RCPopupMenu.pas</Transaction>
+    <Transaction>2016.04.19 22:13:14.618,=E:\github\LeaflatApp\V_2\Common\RCPopupMenu.pas</Transaction>
+  </Transactions>
+	<ProjectSortOrder AutoSort="0" SortType="0">
+    <File Path="Common"/>
+    <File Path="Common\RCPopupMenu.pas"/>
     <File Path="Main.pas"/>
     <File Path="Main.dfm"/>
     <File Path="ufmAddPushpin.pas"/>

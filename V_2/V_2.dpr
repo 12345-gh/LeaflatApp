@@ -5,7 +5,8 @@ uses
   Main in 'Main.pas' {MainForm},
   ufmAddPushpin in 'ufmAddPushpin.pas' {fmAddPushpin},
   ufmAddRoute in 'ufmAddRoute.pas' {fmAddRoute},
-  ufmAddRectangle in 'ufmAddRectangle.pas' {fmAddRectangle};
+  ufmAddRectangle in 'ufmAddRectangle.pas' {fmAddRectangle},
+  RCPopupMenu in 'Common\RCPopupMenu.pas';
 
 {$R *.res}
 

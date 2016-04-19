@@ -29,7 +29,8 @@ uses
   Generics.Collections, dxMapItem, dxCustomMapItemLayer, dxMapItemLayer,
   dxMapLayer, dxMapImageTileLayer, dxMapControlOpenStreetMapImageryDataProvider,
   System.Actions, Vcl.ActnList, cxGeometry, cxListBox, Vcl.Menus, cxCheckBox,
-  dxCoreGraphics, Types, Math, UITypes;
+  dxCoreGraphics, Types, Math, UITypes,
+  RCPopupMenu;
 
 {$REGION 'Pushpin'}
 type
@@ -98,7 +99,7 @@ type
     ActionList1: TActionList;
     dxBarButton6: TdxBarButton;
     cxListBox1: TcxListBox;
-    PopupMenu1: TPopupMenu;
+    ppmMapControl: TPopupMenu;
     cxlbRoutes: TcxListBox;
     dxbmShapes: TdxBar;
     dxBarLargeButton3: TdxBarLargeButton;
@@ -127,7 +128,7 @@ type
     actRectangleCreateCancel: TAction;
     N9: TMenuItem;
     procedure FormCreate(Sender: TObject);
-    procedure PopupMenu1Popup(Sender: TObject);
+    procedure ppmMapControlPopup(Sender: TObject);
     procedure actPushpinAddExecute(Sender: TObject);
     procedure dxMapControl1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -148,6 +149,7 @@ type
       Shift: TShiftState; X, Y: Integer);
   private
     { Private declarations }
+    RCPopupMenuMapControl: TRCPopupMenu;
 
     (*Variable*)
     FCurrentCursorPos : TPoint;
@@ -236,8 +238,13 @@ begin
 
   {$REGION 'Route'}
   if ((FAddRoute = True) and (FIDSelectedRoute <> -1)) then begin
-    if (MessageDlg(QAddRoute,mtConfirmation, mbOKCancel, 0) = mrOk) then begin
-      actRouteCreateExecute(Self)
+    if (FIDSelectedMapDot <> -1) then begin
+      if (MessageDlg(QAddRoute,mtConfirmation, mbOKCancel, 0) = mrOk) then begin
+        AddRoute;
+        actRouteCreateExecute(Self)
+      end else begin
+        actRouteCreateCancelExecute(Self);
+      end;
     end else begin
       actRouteCreateCancelExecute(Self);
     end;
@@ -378,40 +385,44 @@ begin
 
       ARouteItem:=FRoutes[FIDSelectedRoute];
 
-      ARouteItem.triRouteName:= AfmAddRoute.cxteName.Text;
-      ARouteItem.triRouteType:= AfmAddRoute.cxteType.Text;
+      with ARouteItem do begin
+        triRouteName:= AfmAddRoute.cxteName.Text;
+        triRouteType:= AfmAddRoute.cxteType.Text;
 
-      ARouteItem.triLayer.MapItems.BeginUpdate;
+        triLayer.MapItems.BeginUpdate;
 
-      ARouteItem.triCustomElement:= ARouteItem.triLayer.MapItems.Add(TdxMapCustomElement) as TdxMapCustomElement;
-      ACustomElementGeoPoint.Latitude:= ARouteItem.triMapDot[0].Location.GeoPoint.Latitude;
-      ACustomElementGeoPoint.Longitude:= ARouteItem.triMapDot[0].Location.GeoPoint.Longitude+0.025;
-      ARouteItem.triCustomElement.Location.GeoPoint:= ACustomElementGeoPoint;
-      ARouteItem.triCustomElement.Text:= ARouteItem.triRouteName;
-      ARouteItem.triCustomElement.ImageVisible:= False;
-      ARouteItem.triCustomElement.Visible:= True;
+        triCustomElement:= triLayer.MapItems.Add(TdxMapCustomElement) as TdxMapCustomElement;
+        ACustomElementGeoPoint.Latitude:= triMapDot[0].Location.GeoPoint.Latitude;
+        ACustomElementGeoPoint.Longitude:= triMapDot[0].Location.GeoPoint.Longitude+0.025;
+        triCustomElement.Location.GeoPoint:= ACustomElementGeoPoint;
+        triCustomElement.Text:= triRouteName;
+        triCustomElement.ImageVisible:= False;
+        triCustomElement.Visible:= True;
 
-      for I:=0 to ARouteItem.triMapDot.Count-1 do begin
-        ARouteItem.triMapDot[I].Hint:=ARouteItem.triRouteName;
-        ARouteItem.triMapDot[I].Size:= 4;
-        ARouteItem.triMapDot[I].Style.BorderColor:= $FFF20000;
-        ARouteItem.triMapDot[I].Style.BorderWidth:= 2;
-        ARouteItem.triMapDot[I].Style.Color:= $FFF2FF00;
-        ARouteItem.triMapDot[I].Visible:= True;
+        for I:=0 to triMapDot.Count-1 do begin
+          triMapDot[I].Hint:=triRouteName;
+          triMapDot[I].Size:= 4;
+          triMapDot[I].Style.BorderColor:= $FFF20000;
+          triMapDot[I].Style.BorderWidth:= 2;
+          triMapDot[I].Style.Color:= $FFF2FF00;
+          triMapDot[I].Visible:= True;
+        end;
+
+        triPolyline.Hint:=triRouteName;
+        triPolylineColor:= dxColorToAlphaColor(AfmAddRoute.dxceColor.ColorValue);
+        triPolyline.Style.BorderColor:= triPolylineColor;
+        triPolyline.Style.BorderWidth := 3;
+        triPolyline.StyleHot.BorderColor:= $FFFFFFFF;
+        triPolyline.StyleHot.BorderWidth := 3;
+        triPolyline.StyleSelected.BorderColor:= $FFFFFFFF;
+        triPolyline.StyleSelected.BorderWidth := 3;
+
+        triLayer.MapItems.EndUpdate;
       end;
 
-      ARouteItem.triPolyline.Hint:=ARouteItem.triRouteName;
-      ARouteItem.triPolylineColor:= dxColorToAlphaColor(AfmAddRoute.dxceColor.ColorValue);
-      ARouteItem.triPolyline.Style.BorderColor:= ARouteItem.triPolylineColor;
-      ARouteItem.triPolyline.Style.BorderWidth := 3;
-      ARouteItem.triPolyline.StyleHot.BorderColor:= $FFFFFFFF;
-      ARouteItem.triPolyline.StyleHot.BorderWidth := 3;
-      ARouteItem.triPolyline.StyleSelected.BorderColor:= $FFFFFFFF;
-      ARouteItem.triPolyline.StyleSelected.BorderWidth := 3;
-
-      ARouteItem.triLayer.MapItems.EndUpdate;
-
       FRoutes[FIDSelectedRoute]:= ARouteItem;
+    end else begin
+      actRouteCreateCancelExecute(Self);
     end;
 
     SetAllActionsFalse;
@@ -424,16 +435,21 @@ procedure TMainForm.actRouteCreateCancelExecute(Sender: TObject);
 var
   I: integer;
 begin
-  for I:=0 to dxMapControl1.Layers.Count-1 do begin
-    if (dxMapControl1.Layers[I].Equals(FRoutes[FIDSelectedRoute].triLayer) = True) then begin
-      dxMapControl1.Layers.Delete(I);
-      Break;
+  if ((FAddRoute) and (FIDSelectedRoute <> -1)) then begin
+    for I:=0 to dxMapControl1.Layers.Count-1 do begin
+      if (dxMapControl1.Layers[I].Equals(FRoutes[FIDSelectedRoute].triLayer) = True) then begin
+        dxMapControl1.Layers.Delete(I);
+        Break;
+      end;
     end;
-  end;
 
-  FRoutes.Delete(FIDSelectedRoute);
-  FRoutes.TrimExcess;
-  SetAllActionsFalse;
+    FRoutes.Delete(FIDSelectedRoute);
+    FRoutes.TrimExcess;
+    SetAllActionsFalse;
+  end else begin
+    (* Work when only press to menu button 'Create Route' *)
+    SetAllActionsFalse;
+  end;
 end;
 
 procedure TMainForm.actRouteRemoveLastPointExecute(Sender: TObject);
@@ -621,6 +637,8 @@ begin
       end;
 
       FRectangles[FIDSelectedRectangle]:= ARectangleItem;
+    end else begin
+      actRectangleCreateCancelExecute(Self);
     end;
 
     SetAllActionsFalse;
@@ -685,19 +703,19 @@ begin
   FCurrentCursorPos := Point(X, Y);
 
   {$REGION 'Pushpin'}
-  if ((FAddPushpin) and (FMouseMoveWhenMouseDown = False)) then begin
+  if ((FAddPushpin) and (FMouseMoveWhenMouseDown = False) and (Button <> TMouseButton.mbRight)) then begin
     AddPushpin;
   end;
   {$ENDREGION}
 
   {$REGION 'Route'}
-  if ((FAddRoute) and (FMouseMoveWhenMouseDown = False)) then begin
+  if ((FAddRoute) and (FMouseMoveWhenMouseDown = False) and (Button <> TMouseButton.mbRight)) then begin
     AddRoute;
   end;
   {$ENDREGION}
 
   {$REGION 'Rectangle'}
-  if ((FAddRectangle) and (FMouseMoveWhenMouseDown = False)) then begin
+  if ((FAddRectangle) and (FMouseMoveWhenMouseDown = False) and (Button <> TMouseButton.mbRight)) then begin
     AddRectangle;
   end;
   {$ENDREGION}
@@ -749,7 +767,33 @@ begin
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
+var
+  I: integer;
+  PopupMenuItem : TMenuItem;
 begin
+  {$REGION 'Right Click PopupMenu'}
+  (* This block make full copy ppmMapControl PopupMenu.
+     It is need for disable Right Mouse Click,
+     because TPopupMenu can not do this by default,
+     so we create new component which can do this.
+
+     ALL CHANGES NEED TO DO IN ppmMapControl, but
+     if not in ActionList1 it must be write here for copy properties
+  *)
+  RCPopupMenuMapControl:=TRCPopupMenu.Create(Self);
+
+  for I:=0 to ppmMapControl.Items.Count-1 do begin
+    PopupMenuItem:=TMenuItem.Create(RCPopupMenuMapControl);
+    PopupMenuItem.Action:=ppmMapControl.Items[I].Action;
+    RCPopupMenuMapControl.Items.Add(PopupMenuItem);
+  end;
+
+  RCPopupMenuMapControl.OnPopup:= ppmMapControlPopup;
+
+  dxMapControl1.PopupMenu:= RCPopupMenuMapControl;
+  {$ENDREGION}
+
+
   {$REGION 'Pushpin'}
   FPushpin := TList<PushpinItem>.Create;
   {$ENDREGION}
@@ -765,7 +809,7 @@ begin
   SetAllActionsFalse;
 end;
 
-procedure TMainForm.PopupMenu1Popup(Sender: TObject);
+procedure TMainForm.ppmMapControlPopup(Sender: TObject);
 begin
   {$REGION 'Pushpin'}
   if dxMapControl1.HitTest.HitObject is TdxMapPushpinViewInfo then
@@ -785,8 +829,13 @@ begin
   else
     FSelectedMapDot := nil;
 
-  actRouteCreate.Visible := (FAddRoute) and (FRoutes[FIDSelectedRoute].triMapDot.Count-1 >= 1);
-  actRouteRemoveLastPoint.Visible := (FAddRoute) and (FRoutes[FIDSelectedRoute].triMapDot.Count-1 >= 1);
+  if ((FAddRoute) and (FIDSelectedRoute <> -1)) then begin
+    actRouteCreate.Visible := (FAddRoute) and (FRoutes[FIDSelectedRoute].triMapDot.Count-1 >= 1);
+    actRouteRemoveLastPoint.Visible := (FAddRoute) and (FRoutes[FIDSelectedRoute].triMapDot.Count-1 >= 1);
+  end else begin
+    actRouteCreate.Visible := False;
+    actRouteRemoveLastPoint.Visible := False;
+  end;
   actRouteCreateCancel.Visible := (FAddRoute);
   {$ENDREGION}
 
