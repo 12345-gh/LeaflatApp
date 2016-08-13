@@ -1,4 +1,4 @@
-unit ufmAddPushpin;
+unit ufmRouteAdd;
 
 interface
 
@@ -21,10 +21,10 @@ uses
   dxSkinVisualStudio2013Blue, dxSkinVisualStudio2013Dark,
   dxSkinVisualStudio2013Light, dxSkinVS2010, dxSkinWhiteprint,
   dxSkinXmas2008Blue, Vcl.Menus, Vcl.StdCtrls, cxButtons, Vcl.ExtCtrls,
-  cxTextEdit, cxLabel;
+  cxTextEdit, cxLabel, dxCore, cxMaskEdit, cxDropDownEdit, dxColorEdit;
 
 type
-  TfmAddPushpin = class(TForm)
+  TfmRouteAdd = class(TForm)
     cxlbName: TcxLabel;
     cxteName: TcxTextEdit;
     cxteType: TcxTextEdit;
@@ -32,26 +32,27 @@ type
     pButtomPanel: TPanel;
     cxbtOK: TcxButton;
     cxbtCancel: TcxButton;
+    dxceColor: TdxColorEdit;
+    cxlbColor: TcxLabel;
+    procedure cxbtCancelClick(Sender: TObject);
     procedure cxbtOKClick(Sender: TObject);
     procedure cxteNamePropertiesChange(Sender: TObject);
     procedure cxteTypePropertiesChange(Sender: TObject);
-    procedure cxbtCancelClick(Sender: TObject);
   private
     { Private declarations }
-
     function CheckValid: boolean;
   public
     { Public declarations }
   end;
 
 var
-  fmAddPushpin: TfmAddPushpin;
+  fmRouteAdd: TfmRouteAdd;
 
 implementation
 
 {$R *.dfm}
 
-function TfmAddPushpin.CheckValid: boolean;
+function TfmRouteAdd.CheckValid: boolean;
 var
   HintText: string;
 begin
@@ -74,23 +75,23 @@ begin
   end;
 end;
 
-procedure TfmAddPushpin.cxbtCancelClick(Sender: TObject);
+procedure TfmRouteAdd.cxbtCancelClick(Sender: TObject);
 begin
   ModalResult:=mrCancel;
 end;
 
-procedure TfmAddPushpin.cxbtOKClick(Sender: TObject);
+procedure TfmRouteAdd.cxbtOKClick(Sender: TObject);
 begin
   if (not CheckValid) then Exit;
   ModalResult:=mrOk;
 end;
 
-procedure TfmAddPushpin.cxteNamePropertiesChange(Sender: TObject);
+procedure TfmRouteAdd.cxteNamePropertiesChange(Sender: TObject);
 begin
   cxteName.Style.Color:=clWindow;
 end;
 
-procedure TfmAddPushpin.cxteTypePropertiesChange(Sender: TObject);
+procedure TfmRouteAdd.cxteTypePropertiesChange(Sender: TObject);
 begin
   cxteType.Style.Color:=clWindow;
 end;
