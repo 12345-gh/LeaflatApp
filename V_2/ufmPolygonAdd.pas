@@ -1,4 +1,4 @@
-unit ufmAddRoute;
+unit ufmPolygonAdd;
 
 interface
 
@@ -20,11 +20,11 @@ uses
   dxSkinTheAsphaltWorld, dxSkinsDefaultPainters, dxSkinValentine,
   dxSkinVisualStudio2013Blue, dxSkinVisualStudio2013Dark,
   dxSkinVisualStudio2013Light, dxSkinVS2010, dxSkinWhiteprint,
-  dxSkinXmas2008Blue, Vcl.Menus, Vcl.StdCtrls, cxButtons, Vcl.ExtCtrls,
-  cxTextEdit, cxLabel, dxCore, cxMaskEdit, cxDropDownEdit, dxColorEdit;
+  dxSkinXmas2008Blue, Vcl.Menus, dxCore, cxMaskEdit, cxDropDownEdit,
+  dxColorEdit, Vcl.StdCtrls, cxButtons, Vcl.ExtCtrls, cxTextEdit, cxLabel;
 
 type
-  TfmAddRoute = class(TForm)
+  TfmPolygonAdd = class(TForm)
     cxlbName: TcxLabel;
     cxteName: TcxTextEdit;
     cxteType: TcxTextEdit;
@@ -34,25 +34,26 @@ type
     cxbtCancel: TcxButton;
     dxceColor: TdxColorEdit;
     cxlbColor: TcxLabel;
-    procedure cxbtCancelClick(Sender: TObject);
     procedure cxbtOKClick(Sender: TObject);
     procedure cxteNamePropertiesChange(Sender: TObject);
     procedure cxteTypePropertiesChange(Sender: TObject);
+    procedure cxbtCancelClick(Sender: TObject);
   private
     { Private declarations }
+
     function CheckValid: boolean;
   public
     { Public declarations }
   end;
 
 var
-  fmAddRoute: TfmAddRoute;
+  fmPolygonAdd: TfmPolygonAdd;
 
 implementation
 
 {$R *.dfm}
 
-function TfmAddRoute.CheckValid: boolean;
+function TfmPolygonAdd.CheckValid: boolean;
 var
   HintText: string;
 begin
@@ -75,23 +76,23 @@ begin
   end;
 end;
 
-procedure TfmAddRoute.cxbtCancelClick(Sender: TObject);
+procedure TfmPolygonAdd.cxbtCancelClick(Sender: TObject);
 begin
   ModalResult:=mrCancel;
 end;
 
-procedure TfmAddRoute.cxbtOKClick(Sender: TObject);
+procedure TfmPolygonAdd.cxbtOKClick(Sender: TObject);
 begin
   if (not CheckValid) then Exit;
   ModalResult:=mrOk;
 end;
 
-procedure TfmAddRoute.cxteNamePropertiesChange(Sender: TObject);
+procedure TfmPolygonAdd.cxteNamePropertiesChange(Sender: TObject);
 begin
   cxteName.Style.Color:=clWindow;
 end;
 
-procedure TfmAddRoute.cxteTypePropertiesChange(Sender: TObject);
+procedure TfmPolygonAdd.cxteTypePropertiesChange(Sender: TObject);
 begin
   cxteType.Style.Color:=clWindow;
 end;

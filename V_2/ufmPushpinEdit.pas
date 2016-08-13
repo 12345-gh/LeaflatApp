@@ -1,4 +1,4 @@
-unit ufmAddRectangle;
+unit ufmPushpinEdit;
 
 interface
 
@@ -20,11 +20,11 @@ uses
   dxSkinTheAsphaltWorld, dxSkinsDefaultPainters, dxSkinValentine,
   dxSkinVisualStudio2013Blue, dxSkinVisualStudio2013Dark,
   dxSkinVisualStudio2013Light, dxSkinVS2010, dxSkinWhiteprint,
-  dxSkinXmas2008Blue, Vcl.Menus, dxCore, cxMaskEdit, cxDropDownEdit,
-  dxColorEdit, Vcl.StdCtrls, cxButtons, Vcl.ExtCtrls, cxTextEdit, cxLabel;
+  dxSkinXmas2008Blue, Vcl.Menus, Vcl.StdCtrls, cxButtons, Vcl.ExtCtrls,
+  cxTextEdit, cxLabel;
 
 type
-  TfmAddRectangle = class(TForm)
+  TfmPushpinEdit = class(TForm)
     cxlbName: TcxLabel;
     cxteName: TcxTextEdit;
     cxteType: TcxTextEdit;
@@ -32,27 +32,26 @@ type
     pButtomPanel: TPanel;
     cxbtOK: TcxButton;
     cxbtCancel: TcxButton;
-    dxceColor: TdxColorEdit;
-    cxlbColor: TcxLabel;
     procedure cxbtOKClick(Sender: TObject);
     procedure cxteNamePropertiesChange(Sender: TObject);
     procedure cxteTypePropertiesChange(Sender: TObject);
     procedure cxbtCancelClick(Sender: TObject);
   private
     { Private declarations }
+
     function CheckValid: boolean;
   public
     { Public declarations }
   end;
 
 var
-  fmAddRectangle: TfmAddRectangle;
+  fmPushpinEdit: TfmPushpinEdit;
 
 implementation
 
 {$R *.dfm}
 
-function TfmAddRectangle.CheckValid: boolean;
+function TfmPushpinEdit.CheckValid: boolean;
 var
   HintText: string;
 begin
@@ -75,23 +74,23 @@ begin
   end;
 end;
 
-procedure TfmAddRectangle.cxbtCancelClick(Sender: TObject);
+procedure TfmPushpinEdit.cxbtCancelClick(Sender: TObject);
 begin
   ModalResult:=mrCancel;
 end;
 
-procedure TfmAddRectangle.cxbtOKClick(Sender: TObject);
+procedure TfmPushpinEdit.cxbtOKClick(Sender: TObject);
 begin
   if (not CheckValid) then Exit;
   ModalResult:=mrOk;
 end;
 
-procedure TfmAddRectangle.cxteNamePropertiesChange(Sender: TObject);
+procedure TfmPushpinEdit.cxteNamePropertiesChange(Sender: TObject);
 begin
   cxteName.Style.Color:=clWindow;
 end;
 
-procedure TfmAddRectangle.cxteTypePropertiesChange(Sender: TObject);
+procedure TfmPushpinEdit.cxteTypePropertiesChange(Sender: TObject);
 begin
   cxteType.Style.Color:=clWindow;
 end;

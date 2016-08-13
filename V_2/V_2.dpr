@@ -3,10 +3,14 @@ program V_2;
 uses
   Vcl.Forms,
   Main in 'Main.pas' {MainForm},
-  ufmAddPushpin in 'ufmAddPushpin.pas' {fmAddPushpin},
-  ufmAddRoute in 'ufmAddRoute.pas' {fmAddRoute},
-  ufmAddRectangle in 'ufmAddRectangle.pas' {fmAddRectangle},
-  RCPopupMenu in 'Common\RCPopupMenu.pas';
+  ufmPushpinEdit in 'ufmPushpinEdit.pas' {fmPushpinEdit},
+  ufmRouteAdd in 'ufmRouteAdd.pas' {fmRouteAdd},
+  ufmRectangleAdd in 'ufmRectangleAdd.pas' {fmRectangleAdd},
+  RCPopupMenu in 'Common\RCPopupMenu.pas',
+  ufmPolygonAdd in 'ufmPolygonAdd.pas' {fmPolygonAdd},
+  uListItemRecord in 'Common\uListItemRecord.pas',
+  uMapItemCRUD in 'Common\uMapItemCRUD.pas',
+  uListItemCRUD in 'Common\uListItemCRUD.pas';
 
 {$R *.res}
 
@@ -14,8 +18,9 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TfmAddPushpin, fmAddPushpin);
-  Application.CreateForm(TfmAddRoute, fmAddRoute);
-  Application.CreateForm(TfmAddRectangle, fmAddRectangle);
+  Application.CreateForm(TfmPushpinEdit, fmPushpinEdit);
+  Application.CreateForm(TfmRouteAdd, fmRouteAdd);
+  Application.CreateForm(TfmRectangleAdd, fmRectangleAdd);
+  Application.CreateForm(TfmPolygonAdd, fmPolygonAdd);
   Application.Run;
 end.

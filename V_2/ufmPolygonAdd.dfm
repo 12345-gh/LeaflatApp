@@ -1,10 +1,10 @@
-object fmAddRectangle: TfmAddRectangle
+object fmPolygonAdd: TfmPolygonAdd
   Left = 0
   Top = 0
   BorderStyle = bsDialog
-  Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1088#1103#1084#1086#1091#1075#1086#1083#1100#1085#1080#1082
-  ClientHeight = 167
-  ClientWidth = 426
+  Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1086#1083#1080#1075#1086#1085
+  ClientHeight = 165
+  ClientWidth = 428
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -45,16 +45,16 @@ object fmAddRectangle: TfmAddRectangle
   end
   object pButtomPanel: TPanel
     Left = 0
-    Top = 126
-    Width = 426
+    Top = 124
+    Width = 428
     Height = 41
     Align = alBottom
     TabOrder = 4
     DesignSize = (
-      426
+      428
       41)
     object cxbtOK: TcxButton
-      Left = 260
+      Left = 262
       Top = 8
       Width = 75
       Height = 25
@@ -64,7 +64,7 @@ object fmAddRectangle: TfmAddRectangle
       OnClick = cxbtOKClick
     end
     object cxbtCancel: TcxButton
-      Left = 341
+      Left = 343
       Top = 8
       Width = 75
       Height = 25

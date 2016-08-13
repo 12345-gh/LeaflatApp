@@ -22,58 +22,19 @@ uses
   dxSkinVisualStudio2013Light, dxSkinVS2010, dxSkinWhiteprint,
   dxSkinXmas2008Blue, dxSkinsdxBarPainter, dxRibbonSkins,
   dxSkinsdxRibbonPainter, dxRibbonCustomizationForm, dxBar, cxClasses, dxRibbon,
-  dxStatusBar, dxRibbonStatusBar, cxContainer, cxEdit, dxMapControlTypes,
-  dxMapControl, cxSplitter, cxGroupBox, dxSkinscxPCPainter, dxBarBuiltInMenu,
+  dxStatusBar, dxRibbonStatusBar, cxContainer, cxEdit,
+   cxSplitter, cxGroupBox, dxSkinscxPCPainter, dxBarBuiltInMenu,
   cxPC, Vcl.StdCtrls, cxCheckListBox,
 
   Generics.Collections, dxMapItem, dxCustomMapItemLayer, dxMapItemLayer,
   dxMapLayer, dxMapImageTileLayer, dxMapControlOpenStreetMapImageryDataProvider,
   System.Actions, Vcl.ActnList, cxGeometry, cxListBox, Vcl.Menus, cxCheckBox,
-  dxCoreGraphics, Types, Math, UITypes,
-  RCPopupMenu;
-
-{$REGION 'Pushpin'}
-type
-  PushpinItem=record
-    tppPushpinName: string;
-    tppPushpinType: string;
-    tppLayer: TdxMapItemLayer;
-    tppPushpin: TdxMapPushpin;
-  end;
-{$ENDREGION}
-
-{$REGION 'Route'}
-type
-  MapDotItem=record
-    mdiMapDot: TdxMapDot;
-    mdiBeforeDot: TdxMapDot;
-    mdiAfterDot: TdxMapDot;
-  end;
-
-type
-  RouteItem=record
-    triRouteName: string;
-    triRouteType: string;
-    triLayer: TdxMapItemLayer;
-    triMapDot: TList<TdxMapDot>;
-    triMapDotBetween: TList<MapDotItem>;
-    triPolyline: TdxMapPolyline;
-    triPolylineColor: TdxAlphaColor;
-    triCustomElement: TdxMapCustomElement;
-  end;
-{$ENDREGION}
-
-{$REGION 'Rectangle'}
-type
-  RectangleItem=record
-    trtRectangleName: string;
-    trtRectangleType: string;
-    trtLayer: TdxMapItemLayer;
-    trtRectangle: TdxMapPolygon;
-    trtRectangleColor: TdxAlphaColor;
-    trtCustomElement: TdxMapCustomElement;
-  end;
-{$ENDREGION}
+  dxCoreGraphics, Types, System.Math, dxMapControl, UITypes,
+  RCPopupMenu,  dxMapControlTypes,
+  (* DX *)
+  (* Delphi *)
+  (* User *)
+  uListItemRecord, uMapItemCRUD, uListItemCRUD;
 
 type
   TMainForm = class(TForm)
@@ -124,9 +85,19 @@ type
     actRectangleAdd: TAction;
     actRectangleCreate: TAction;
     N8: TMenuItem;
-    dxBarLargeButton2: TdxBarLargeButton;
     actRectangleCreateCancel: TAction;
     N9: TMenuItem;
+    dxBarLargeButton2: TdxBarLargeButton;
+    actPolygonAdd: TAction;
+    actPolygonCreate: TAction;
+    N10: TMenuItem;
+    actPolygonRemoveLastPoint: TAction;
+    N11: TMenuItem;
+    actPolygonCreateCancel: TAction;
+    N12: TMenuItem;
+    dxMapControl1ItemLayer1: TdxMapItemLayer;
+    actRouteEdit: TAction;
+    N13: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure ppmMapControlPopup(Sender: TObject);
     procedure actPushpinAddExecute(Sender: TObject);
@@ -147,11 +118,19 @@ type
     procedure actRectangleCreateCancelExecute(Sender: TObject);
     procedure dxMapControl1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure actPolygonAddExecute(Sender: TObject);
+    procedure actPolygonCreateExecute(Sender: TObject);
+    procedure actPolygonRemoveLastPointExecute(Sender: TObject);
+    procedure actPolygonCreateCancelExecute(Sender: TObject);
+    procedure actRouteEditExecute(Sender: TObject);
+    procedure dxMapControl1Click(Sender: TObject);
   private
     { Private declarations }
     RCPopupMenuMapControl: TRCPopupMenu;
 
     (*Variable*)
+    FMapControl: TdxMapControl;
+    FImageTileLayer : TdxMapImageTileLayer;
     FCurrentCursorPos : TPoint;
     FMouseDown: Boolean;
     FMouseMoveWhenMouseDown: Boolean;
@@ -166,42 +145,57 @@ type
 
     {$REGION 'Route Variable'}
     FRoutes : TList<RouteItem>;       // Main list of routes
-    FAddRoute  : Boolean;             // If press button on ribbon panel
+
+    FAddRoute : Boolean;             // If press button on ribbon panel
+
+    FEditRoute : Boolean;             // If select edit action
+    FMiddleGeoPointItem : TList<TdxMapDot>;
 
     FIDSelectedRoute : integer;
-    FIDSelectedMapDot : integer;
+    FIDSelectedRouteMapDot : integer;
+    FIDSelectedMiddleGeoPointItemMapDot : integer;
 
-    FSelectedMapDot : TdxMapDot;      // Selected MapDot
     {$ENDREGION}
 
-    {$REGION 'Route Variable'}
+    {$REGION 'Rectangle Variable'}
     FRectangles : TList<RectangleItem>; // Main list of rectangle
-    FAddRectangle : Boolean;          // If press button on ribbon panel
+    FAddRectangle : Boolean;            // If press button on ribbon panel
 
     FIDSelectedRectangle : integer;
 
     {$ENDREGION}
 
+    {$REGION 'Polygone'}
+    FPolygones : TList<PolygonItem>; // Main list of polygone
+    FAddPolygon : Boolean;            // If press button on ribbon panel
+
+    FIDSelectedPolygon : integer;
+
+    FIDSelectedPolygonGeoPoint : integer;      // Selected MapDot
+    {$ENDREGION}
+
     (*Procedure / Function*)
-    function GetCurrentCursorGeoPoint : TdxMapControlGeoPoint;
     procedure CheckAllActionsFalse;
     procedure SetAllActionsFalse;
 
     {$REGION 'Pushpin procedure / function'}
-    procedure AddPushpin;
+    procedure AddPushpinItemToList;
     {$ENDREGION}
 
     {$REGION 'Route procedure / function'}
-    procedure AddRoute;
+    procedure AddRouteItemToList;
     {$ENDREGION}
 
     {$REGION 'Rectangle procedure / function'}
     procedure AddRectangle;
     {$ENDREGION}
 
+    {$REGION 'Polygon procedure / function'}
+    procedure AddPolygon;
+    {$ENDREGION}
+
   public
     { Public declarations }
-    property CurrentCursorGeoPoint: TdxMapControlGeoPoint read GetCurrentCursorGeoPoint;
   end;
 
 var
@@ -210,15 +204,12 @@ var
 implementation
 
 uses
-  ufmAddPushpin, ufmAddRoute, ufmAddRectangle;
+  ufmPushpinEdit, ufmRouteAdd, ufmRectangleAdd, ufmPolygonAdd;
 
 {$R *.dfm}
 
 {$REGION 'Procedure / Function'}
-function TMainForm.GetCurrentCursorGeoPoint: TdxMapControlGeoPoint;
-begin
-  Result := dxMapControl1ImageTileLayer1.ScreenPointToGeoPoint(dxPointDouble(FCurrentCursorPos));
-end;
+
 
 procedure TMainForm.CheckAllActionsFalse;
 const
@@ -229,7 +220,7 @@ begin
   {$REGION 'Pushpin'}
   if ((FAddPushpin = True) and (FIDMovePushpin <> -1)) then begin
     if (MessageDlg(QAddPushpin,mtConfirmation, mbOKCancel, 0) = mrOk) then begin
-      AddPushpin
+      AddPushpinItemToList
     end else begin
       SetAllActionsFalse;
     end;
@@ -238,9 +229,9 @@ begin
 
   {$REGION 'Route'}
   if ((FAddRoute = True) and (FIDSelectedRoute <> -1)) then begin
-    if (FIDSelectedMapDot <> -1) then begin
+    if (FIDSelectedRouteMapDot <> -1) then begin
       if (MessageDlg(QAddRoute,mtConfirmation, mbOKCancel, 0) = mrOk) then begin
-        AddRoute;
+        AddRouteItemToList;
         actRouteCreateExecute(Self)
       end else begin
         actRouteCreateCancelExecute(Self);
@@ -271,31 +262,38 @@ begin
 
   FAddRoute := False;
   FIDSelectedRoute := -1;
-  FIDSelectedMapDot := -1;
+  FIDSelectedRouteMapDot := -1;
+  FIDSelectedMiddleGeoPointItemMapDot := -1;
 
   FAddRectangle := False;
   FIDSelectedRectangle := -1;
+
+  FAddPolygon := False;
+  FIDSelectedPolygon := -1;
+  FIDSelectedPolygonGeoPoint := -1;
 end;
 {$ENDREGION}
 
 {$REGION 'Pushpin procedure / function'}
-procedure TMainForm.AddPushpin;
+procedure TMainForm.AddPushpinItemToList;
 var
-  AfmAddPushin: TfmAddPushpin;
+  AfmPushinAdd: TfmPushpinEdit;
   APushpinItem : PushpinItem;
 begin
-  Application.CreateForm(TfmAddPushpin, AfmAddPushin);
-  if AfmAddPushin.ShowModal=mrOk
+  Application.CreateForm(TfmPushpinEdit, AfmPushinAdd);
+  AfmPushinAdd.cxteName.Text := 'Pushpin ' + IntToStr(FPushpin.Count+1);
+  AfmPushinAdd.cxteType.Text := 'Pushpin type ' + IntToStr(FPushpin.Count+1);
+  if AfmPushinAdd.ShowModal=mrOk
     then begin
-      APushpinItem.tppPushpinName:= AfmAddPushin.cxteName.Text;
-      APushpinItem.tppPushpinType:= AfmAddPushin.cxteType.Text;
-      APushpinItem.tppLayer:= dxMapControl1.AddItemLayer as TdxMapItemLayer;
+      APushpinItem.tppPushpinName:= AfmPushinAdd.cxteName.Text;
+      APushpinItem.tppPushpinType:= AfmPushinAdd.cxteType.Text;
+      APushpinItem.tppLayer:= CreateItemLayer(FMapControl);
 
       APushpinItem.tppLayer.MapItems.BeginUpdate;
 
-      APushpinItem.tppPushpin:= APushpinItem.tppLayer.MapItems.Add(TdxMapPushpin) as TdxMapPushpin;
-      APushpinItem.tppPushpin.Location.GeoPoint:= CurrentCursorGeoPoint;
-      APushpinItem.tppPushpin.Text:= AfmAddPushin.cxteName.Text;
+      APushpinItem.tppPushpin:= CreatePushpin(APushpinItem.tppLayer);
+      APushpinItem.tppPushpin.Location.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+      APushpinItem.tppPushpin.Text:= AfmPushinAdd.cxteName.Text;
 
       APushpinItem.tppLayer.Visible:= True;
       APushpinItem.tppLayer.MapItems.EndUpdate;
@@ -304,8 +302,8 @@ begin
     end;
 
   SetAllActionsFalse;
-  AfmAddPushin.Destroy;
-  AfmAddPushin:=nil;
+  AfmPushinAdd.Destroy;
+  AfmPushinAdd:=nil;
 end;
 
 procedure TMainForm.actPushpinAddExecute(Sender: TObject);
@@ -331,7 +329,7 @@ end;
 
 procedure TMainForm.actPushinMoveSaveExecute(Sender: TObject);
 begin
-  FPushpin[FIDMovePushpin].tppPushpin.Location.GeoPoint:= CurrentCursorGeoPoint;
+  FPushpin[FIDMovePushpin].tppPushpin.Location.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
   SetAllActionsFalse;
 end;
 
@@ -349,9 +347,9 @@ begin
   for I := 0 to FPushpin.Count - 1 do begin
     if FPushpin[I].tppPushpin.Location.GeoPoint.IsEqual(FSelectedPushpin.Location.GeoPoint) then begin
 
-      for J:=0 to dxMapControl1.Layers.Count-1 do begin
-        if (dxMapControl1.Layers[J].Equals(FPushpin[I].tppLayer) = True) then begin
-          dxMapControl1.Layers.Delete(J);
+      for J:=0 to FMapControl.Layers.Count-1 do begin
+        if (FMapControl.Layers[J].Equals(FPushpin[I].tppLayer) = True) then begin
+          FMapControl.Layers.Delete(J);
           Break;
         end;
       end;
@@ -374,20 +372,22 @@ end;
 
 procedure TMainForm.actRouteCreateExecute(Sender: TObject);
 var
-  AfmAddRoute: TfmAddRoute;
+  AfmRouteAdd: TfmRouteAdd;
   ARouteItem: RouteItem;
   ACustomElementGeoPoint: TdxMapControlGeoPoint;
   I: integer;
 begin
-  if ((FAddRoute) and (FIDSelectedRoute <> -1) and (FIDSelectedMapDot <> -1)) then begin
-    Application.CreateForm(TfmAddRoute, AfmAddRoute);
-    if AfmAddRoute.ShowModal=mrOk then begin
+  if ((FAddRoute) and (FIDSelectedRoute <> -1) and (FIDSelectedRouteMapDot <> -1)) then begin
+    Application.CreateForm(TfmRouteAdd, AfmRouteAdd);
+    AfmRouteAdd.cxteName.Text := 'Route ' + IntToStr(FRoutes.Count);
+    AfmRouteAdd.cxteType.Text := 'Route type ' + IntToStr(FRoutes.Count);
+    if AfmRouteAdd.ShowModal=mrOk then begin
 
       ARouteItem:=FRoutes[FIDSelectedRoute];
 
       with ARouteItem do begin
-        triRouteName:= AfmAddRoute.cxteName.Text;
-        triRouteType:= AfmAddRoute.cxteType.Text;
+        triRouteName:= AfmRouteAdd.cxteName.Text;
+        triRouteType:= AfmRouteAdd.cxteType.Text;
 
         triLayer.MapItems.BeginUpdate;
 
@@ -409,13 +409,10 @@ begin
         end;
 
         triPolyline.Hint:=triRouteName;
-        triPolylineColor:= dxColorToAlphaColor(AfmAddRoute.dxceColor.ColorValue);
-        triPolyline.Style.BorderColor:= triPolylineColor;
-        triPolyline.Style.BorderWidth := 3;
-        triPolyline.StyleHot.BorderColor:= $FFFFFFFF;
-        triPolyline.StyleHot.BorderWidth := 3;
-        triPolyline.StyleSelected.BorderColor:= $FFFFFFFF;
-        triPolyline.StyleSelected.BorderWidth := 3;
+
+        SetPolylineItemStyle(triPolyline, AfmRouteAdd.dxceColor.ColorValue, $FFFFFF, 3, False); // SET COLOR
+
+        triPolylineColor:= AfmRouteAdd.dxceColor.ColorValue;
 
         triLayer.MapItems.EndUpdate;
       end;
@@ -426,8 +423,39 @@ begin
     end;
 
     SetAllActionsFalse;
-    AfmAddRoute.Destroy;
-    AfmAddRoute:=nil;
+    AfmRouteAdd.Destroy;
+    AfmRouteAdd:=nil;
+  end;
+end;
+
+procedure TMainForm.actRouteEditExecute(Sender: TObject);
+var
+  I : Integer;
+  ARouteItem: RouteItem;
+begin
+  if (FIDSelectedRoute <> -1) then begin
+    FEditRoute := True;
+
+    ARouteItem:=FRoutes[FIDSelectedRoute];
+
+    FMiddleGeoPointItem := TList<TdxMapDot>.Create;
+
+    with ARouteItem do begin
+      triLayer.MapItems.BeginUpdate;
+      triCustomElement.Visible:= False;
+
+      for I:=0 to triMapDot.Count-1 do begin
+        SetMapDotItemStyle(triMapDot[I], $0000FF, $0000FF, 2, True); // RED COLOR
+        triMapDot[I].Visible:= True;
+      end;
+
+      // Create middle geopoint list
+      FMiddleGeoPointItem := CreateMiddleGeoPointItemList(triMapDot, triLayer);
+
+      SetPolylineItemStyle(triPolyline, $0000FF, $0000FF, 1, True); // RED COLOR
+      
+      triLayer.MapItems.EndUpdate;
+    end;
   end;
 end;
 
@@ -436,9 +464,9 @@ var
   I: integer;
 begin
   if ((FAddRoute) and (FIDSelectedRoute <> -1)) then begin
-    for I:=0 to dxMapControl1.Layers.Count-1 do begin
-      if (dxMapControl1.Layers[I].Equals(FRoutes[FIDSelectedRoute].triLayer) = True) then begin
-        dxMapControl1.Layers.Delete(I);
+    for I:=0 to FMapControl.Layers.Count-1 do begin
+      if (FMapControl.Layers[I].Equals(FRoutes[FIDSelectedRoute].triLayer) = True) then begin
+        FMapControl.Layers.Delete(I);
         Break;
       end;
     end;
@@ -454,110 +482,98 @@ end;
 
 procedure TMainForm.actRouteRemoveLastPointExecute(Sender: TObject);
 begin
-  if ((FAddRoute) and (FIDSelectedRoute <> -1) and (FIDSelectedMapDot <> -1))
+  if ((FAddRoute) and (FIDSelectedRoute <> -1) and (FIDSelectedRouteMapDot <> -1))
   then begin
-    FRoutes[FIDSelectedRoute].triLayer.MapItems.BeginUpdate;
-
-    FRoutes[FIDSelectedRoute].triMapDot.Delete(FIDSelectedMapDot);
-    FRoutes[FIDSelectedRoute].triPolyline.GeoPoints.Delete(FIDSelectedMapDot);
-    FIDSelectedMapDot:= FIDSelectedMapDot - 1;
-    FRoutes[FIDSelectedRoute].triMapDot.Delete(FIDSelectedMapDot);
-    FRoutes[FIDSelectedRoute].triPolyline.GeoPoints.Delete(FIDSelectedMapDot);
-    FIDSelectedMapDot:= FIDSelectedMapDot - 1;
-
-    FRoutes[FIDSelectedRoute].triMapDot.TrimExcess;
-
-    FRoutes[FIDSelectedRoute].triLayer.MapItems.EndUpdate;
+    DeleteRoutePoint(FRoutes, FIDSelectedRoute, FIDSelectedRouteMapDot);
+    FIDSelectedRouteMapDot:= FIDSelectedRouteMapDot - 1;
   end;
 end;
 
-procedure TMainForm.AddRoute;
+procedure TMainForm.AddRouteItemToList;
 var
   ARouteItem : RouteItem;
   AMapDot: TdxMapDot;
 begin
-  if ((FIDSelectedRoute = -1) and (FIDSelectedMapDot = -1)) then begin
+  if ((FIDSelectedRoute = -1) and (FIDSelectedRouteMapDot = -1)) then begin
     {$REGION 'Init new route'}
-    ARouteItem.triRouteName:= '';
-    ARouteItem.triRouteType:= '';
-    ARouteItem.triPolylineColor:= $8FFF0000; //Red
+    with ARouteItem do begin
+      triRouteName:= '';
+      triRouteType:= '';
+      triPolylineColor:= $0000FF; // RED COLOR
 
-    ARouteItem.triLayer:= dxMapControl1.AddItemLayer as TdxMapItemLayer;
-    ARouteItem.triLayer.MapItems.BeginUpdate;
+      triLayer:= CreateItemLayer(FMapControl);
+      triLayer.MapItems.BeginUpdate;
 
-    ARouteItem.triMapDotBetween:= TList<MapDotItem>.Create;
-    ARouteItem.triMapDot:= TList<TdxMapDot>.Create;
+      triMapDot:= TList<TdxMapDot>.Create;
 
-    AMapDot:= ARouteItem.triLayer.MapItems.Add(TdxMapDot) as TdxMapDot;
-    AMapDot.Location.GeoPoint:= CurrentCursorGeoPoint;
-    AMapDot.Visible:= False;
-    ARouteItem.triMapDot.Add(AMapDot);
+      AMapDot:= CreateMapDot(triLayer);
+      AMapDot.Location.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+      AMapDot.Visible:= False;
+      triMapDot.Add(AMapDot);
 
-    (* EndPoint, use for mouse cursor move *)
-    AMapDot:= ARouteItem.triLayer.MapItems.Add(TdxMapDot) as TdxMapDot;
-    AMapDot.Location.GeoPoint:= CurrentCursorGeoPoint;
-    AMapDot.Visible:= False;
-    ARouteItem.triMapDot.Add(AMapDot);
+      (* EndPoint, use for mouse cursor move *)
+      AMapDot:= CreateMapDot(triLayer);
+      AMapDot.Location.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+      AMapDot.Visible:= False;
+      triMapDot.Add(AMapDot);
 
-    ARouteItem.triPolyline:=ARouteItem.triLayer.AddItem(TdxMapPolyline) as TdxMapPolyline;
-    ARouteItem.triPolyline.GeoPoints.Add.GeoPoint:=CurrentCursorGeoPoint;
-    ARouteItem.triPolyline.GeoPoints.Add.GeoPoint:=CurrentCursorGeoPoint; //EndPoint, use for mouse cursor move
-    ARouteItem.triPolyline.Style.BorderColor:= ARouteItem.triPolylineColor; //Red
-    ARouteItem.triPolyline.Style.BorderWidth := 1;
-    ARouteItem.triPolyline.StyleHot.BorderColor:= ARouteItem.triPolylineColor; //Red
-    ARouteItem.triPolyline.StyleHot.BorderWidth := 1;
-    ARouteItem.triPolyline.StyleSelected.BorderColor:= ARouteItem.triPolylineColor; //Red
-    ARouteItem.triPolyline.StyleSelected.BorderWidth := 1;
-    ARouteItem.triPolyline.Visible:= True;
+      triPolyline := CreateMapPolyline(triLayer);
 
-    ARouteItem.triLayer.Visible:= True;
-    ARouteItem.triLayer.MapItems.EndUpdate;
+      triPolyline.GeoPoints.Add.GeoPoint:=GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+      triPolyline.GeoPoints.Add.GeoPoint:=GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos); //EndPoint, use for mouse cursor move
 
+      SetPolylineItemStyle(triPolyline, triPolylineColor, triPolylineColor, 1, False); // RED COLOR
+
+      triPolyline.Visible:= True;
+
+      triLayer.Visible:= True;
+      triLayer.MapItems.EndUpdate;
+    end;
     FRoutes.Add(ARouteItem);
 
     FIDSelectedRoute := FRoutes.Count-1;
-    FIDSelectedMapDot:= FRoutes[FIDSelectedRoute].triMapDot.Count-1;
+    FIDSelectedRouteMapDot:= FRoutes[FIDSelectedRoute].triMapDot.Count-1;
     {$ENDREGION}
   end else begin
-    if ((FIDSelectedRoute <> -1) and (FIDSelectedMapDot = -1)) then begin
+    if ((FIDSelectedRoute <> -1) and (FIDSelectedRouteMapDot = -1)) then begin
       {$REGION 'Add new first MapDot to route if it was deleted'}
       FRoutes[FIDSelectedRoute].triLayer.MapItems.BeginUpdate;
 
       (*Add new end MapDot*)
       AMapDot:= FRoutes[FIDSelectedRoute].triLayer.MapItems.Add(TdxMapDot) as TdxMapDot;
-      AMapDot.Location.GeoPoint:= CurrentCursorGeoPoint;
+      AMapDot.Location.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
       AMapDot.Visible:= False;
       FRoutes[FIDSelectedRoute].triMapDot.Add(AMapDot);
       FRoutes[FIDSelectedRoute].triMapDot.Add(AMapDot); //EndPoint, use for mouse cursor move
 
       (*Add new MapDot to Polyline*)
-      FRoutes[FIDSelectedRoute].triPolyline.GeoPoints.Add.GeoPoint:=CurrentCursorGeoPoint;
-      FRoutes[FIDSelectedRoute].triPolyline.GeoPoints.Add.GeoPoint:=CurrentCursorGeoPoint; //EndPoint, use for mouse cursor move
+      FRoutes[FIDSelectedRoute].triPolyline.GeoPoints.Add.GeoPoint:=GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+      FRoutes[FIDSelectedRoute].triPolyline.GeoPoints.Add.GeoPoint:=GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos); //EndPoint, use for mouse cursor move
 
       FRoutes[FIDSelectedRoute].triLayer.MapItems.EndUpdate;
 
-      FIDSelectedMapDot:= FRoutes[FIDSelectedRoute].triMapDot.Count-1;
+      FIDSelectedRouteMapDot:= FRoutes[FIDSelectedRoute].triMapDot.Count-1;
       {$ENDREGION}
     end else begin
       {$REGION 'Add new MapDot to route (not first)'}
       FRoutes[FIDSelectedRoute].triLayer.MapItems.BeginUpdate;
 
       (*Last MapDot which moved with cursor*)
-      FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedMapDot].Location.GeoPoint:=CurrentCursorGeoPoint;
+      FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot].Location.GeoPoint:=GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
 
       (*Add new end MapDot*)
       AMapDot:= FRoutes[FIDSelectedRoute].triLayer.MapItems.Add(TdxMapDot) as TdxMapDot;
-      AMapDot.Location.GeoPoint:= CurrentCursorGeoPoint;
+      AMapDot.Location.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
       AMapDot.Visible:= False;
       FRoutes[FIDSelectedRoute].triMapDot.Add(AMapDot);
 
       (*Add new MapDot to Polyline*)
-      FRoutes[FIDSelectedRoute].triPolyline.GeoPoints[FIDSelectedMapDot].GeoPoint:= CurrentCursorGeoPoint;
-      FRoutes[FIDSelectedRoute].triPolyline.GeoPoints.Add.GeoPoint:=CurrentCursorGeoPoint;
+      FRoutes[FIDSelectedRoute].triPolyline.GeoPoints[FIDSelectedRouteMapDot].GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+      FRoutes[FIDSelectedRoute].triPolyline.GeoPoints.Add.GeoPoint:=GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
 
       FRoutes[FIDSelectedRoute].triLayer.MapItems.EndUpdate;
 
-      FIDSelectedMapDot:= FRoutes[FIDSelectedRoute].triMapDot.Count-1;
+      FIDSelectedRouteMapDot:= FRoutes[FIDSelectedRoute].triMapDot.Count-1;
       {$ENDREGION}
     end;
   end;
@@ -578,9 +594,9 @@ var
 begin
   if ((FAddRectangle) and (FIDSelectedRectangle <> -1))
   then begin
-    for I:=0 to dxMapControl1.Layers.Count-1 do begin
-      if (dxMapControl1.Layers[I].Equals(FRectangles[FIDSelectedRectangle].trtLayer) = True) then begin
-        dxMapControl1.Layers.Delete(I);
+    for I:=0 to FMapControl.Layers.Count-1 do begin
+      if (FMapControl.Layers[I].Equals(FRectangles[FIDSelectedRectangle].trtLayer) = True) then begin
+        FMapControl.Layers.Delete(I);
         Break;
       end;
     end;
@@ -593,24 +609,21 @@ begin
 end;
 
 procedure TMainForm.actRectangleCreateExecute(Sender: TObject);
-const
-  AlphaChannel = 100;
 var
-  AfmAddRectangle: TfmAddRectangle;
+  AfmRectangleAdd: TfmRectangleAdd;
   ARectangleItem : RectangleItem;
   ACustomElementGeoPoint: TdxMapControlGeoPoint;
 begin
   if ((FAddRectangle) and (FIDSelectedRectangle <> -1)) then begin
-    Application.CreateForm(TfmAddRectangle, AfmAddRectangle);
-    if AfmAddRectangle.ShowModal=mrOk then begin
+    Application.CreateForm(TfmRectangleAdd, AfmRectangleAdd);
+    if AfmRectangleAdd.ShowModal=mrOk then begin
 
       ARectangleItem:=FRectangles[FIDSelectedRectangle];
 
-
       with ARectangleItem do begin
-        trtRectangleName:= AfmAddRectangle.cxteName.Text;;
-        trtRectangleType:= AfmAddRectangle.cxteType.Text;
-        trtRectangleColor:= dxColorToAlphaColor(AfmAddRectangle.dxceColor.ColorValue, AlphaChannel);
+        trtRectangleName:= AfmRectangleAdd.cxteName.Text;;
+        trtRectangleType:= AfmRectangleAdd.cxteType.Text;
+        trtRectangleColor:= dxColorToAlphaColor(AfmRectangleAdd.dxceColor.ColorValue, AlphaChannelTransparent);
 
         trtLayer.MapItems.BeginUpdate;
 
@@ -642,8 +655,8 @@ begin
     end;
 
     SetAllActionsFalse;
-    AfmAddRectangle.Destroy;
-    AfmAddRectangle:=nil;
+    AfmRectangleAdd.Destroy;
+    AfmRectangleAdd:=nil;
   end;
 end;
 
@@ -657,14 +670,14 @@ begin
       trtRectangleType:= '';
       trtRectangleColor:= $3F770000; //Red
 
-      trtLayer:= dxMapControl1.AddItemLayer as TdxMapItemLayer;
+      trtLayer:= CreateItemLayer(FMapControl);
       trtLayer.MapItems.BeginUpdate;
 
       trtRectangle:= trtLayer.MapItems.Add(TdxMapPolygon) as TdxMapPolygon;
-      trtRectangle.GeoPoints.Add.GeoPoint:= CurrentCursorGeoPoint;
-      trtRectangle.GeoPoints.Add.GeoPoint:= CurrentCursorGeoPoint;
-      trtRectangle.GeoPoints.Add.GeoPoint:= CurrentCursorGeoPoint;
-      trtRectangle.GeoPoints.Add.GeoPoint:= CurrentCursorGeoPoint;
+      trtRectangle.GeoPoints.Add.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+      trtRectangle.GeoPoints.Add.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+      trtRectangle.GeoPoints.Add.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+      trtRectangle.GeoPoints.Add.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
 
       trtRectangle.Style.Color:= trtRectangleColor; //Red
       trtRectangle.Style.BorderColor:= trtRectangleColor; //Red
@@ -690,10 +703,315 @@ end;
 {$ENDREGION}
 
 
+{$REGION 'Polygone procedure / function'}
+procedure TMainForm.actPolygonAddExecute(Sender: TObject);
+begin
+  CheckAllActionsFalse;
+  SetAllActionsFalse;
+  FAddPolygon := True;
+end;
+
+procedure TMainForm.AddPolygon;
+var
+  APolygonItem : PolygonItem;
+begin
+  if ((FIDSelectedPolygon = -1) and (FIDSelectedPolygonGeoPoint = -1)) then begin
+    {$REGION 'Init new polygon'}
+    with APolygonItem do begin
+      tpgPolygoneName:= '';
+      tpgPolygoneType:= '';
+      tpgPolygoneColor:= $3F770000; //Red
+
+      tpgLayer:= CreateItemLayer(FMapControl);
+      tpgLayer.MapItems.BeginUpdate;
+
+      tpgPolygone:= tpgLayer.MapItems.Add(TdxMapPolygon) as TdxMapPolygon;
+      tpgPolygone.GeoPoints.Add.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+      tpgPolygone.GeoPoints.Add.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+
+      tpgPolygone.Style.Color:= tpgPolygoneColor; //Red
+      tpgPolygone.Style.BorderColor:= tpgPolygoneColor; //Red
+      tpgPolygone.Style.BorderWidth := 1;
+      tpgPolygone.StyleHot.Color:= tpgPolygoneColor; //Red
+      tpgPolygone.StyleHot.BorderColor:= tpgPolygoneColor; //Red
+      tpgPolygone.StyleHot.BorderWidth := 1;
+      tpgPolygone.StyleSelected.Color:= tpgPolygoneColor; //Red
+      tpgPolygone.StyleSelected.BorderColor:= tpgPolygoneColor; //Red
+      tpgPolygone.StyleSelected.BorderWidth := 1;
+      tpgPolygone.Visible:= True;
+
+      tpgLayer.Visible:= True;
+      tpgLayer.MapItems.EndUpdate;
+    end;
+
+    FPolygones.Add(APolygonItem);
+
+    FIDSelectedPolygon := FPolygones.Count-1;
+    FIDSelectedPolygonGeoPoint := FPolygones[FIDSelectedPolygon].tpgPolygone.GeoPoints.Count-1;
+    {$ENDREGION}
+  end else begin
+    if ((FIDSelectedPolygon <> -1) and (FIDSelectedPolygonGeoPoint = -1)) then begin
+      {$REGION 'Add new first dot to polygon if it was deleted'}
+      FPolygones[FIDSelectedPolygon].tpgLayer.MapItems.BeginUpdate;
+
+      (*Add new end dot*)
+      FPolygones[FIDSelectedPolygon].tpgPolygone.GeoPoints.Add.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+      FPolygones[FIDSelectedPolygon].tpgPolygone.GeoPoints.Add.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos); //EndPoint, use for mouse cursor move
+
+      (*Add new dot to Polyline*)
+      FPolygones[FIDSelectedPolygon].tpgPolygone.GeoPoints.Add.GeoPoint:=GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+      FPolygones[FIDSelectedPolygon].tpgPolygone.GeoPoints.Add.GeoPoint:=GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos); //EndPoint, use for mouse cursor move
+
+      FPolygones[FIDSelectedPolygon].tpgLayer.MapItems.EndUpdate;
+
+      FIDSelectedPolygonGeoPoint:= FPolygones[FIDSelectedPolygon].tpgPolygone.GeoPoints.Count-1;
+      {$ENDREGION}
+    end else begin
+      {$REGION 'Add new dot to polygon (not first)'}
+      FPolygones[FIDSelectedPolygon].tpgLayer.MapItems.BeginUpdate;
+
+      (*Last dot which moved with cursor*)
+      FPolygones[FIDSelectedPolygon].tpgPolygone.GeoPoints[FIDSelectedPolygonGeoPoint].GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+
+      (*Add new end dot*)
+      FPolygones[FIDSelectedPolygon].tpgPolygone.GeoPoints.Add.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+
+      FPolygones[FIDSelectedPolygon].tpgLayer.MapItems.EndUpdate;
+
+      FIDSelectedPolygonGeoPoint:= FPolygones[FIDSelectedPolygon].tpgPolygone.GeoPoints.Count-1;
+      {$ENDREGION}
+    end;
+  end;
+
+end;
+
+procedure TMainForm.actPolygonCreateExecute(Sender: TObject);
+const
+  AlphaChannel = 100;
+var
+  AfmPolygonAdd: TfmPolygonAdd;
+  APolygonItem: PolygonItem;
+  ACustomElementGeoPoint: TdxMapControlGeoPoint;
+//  I: integer;
+begin
+  if ((FAddPolygon) and (FIDSelectedPolygon <> -1) and (FIDSelectedPolygonGeoPoint <> -1)) then begin
+    Application.CreateForm(TfmPolygonAdd, AfmPolygonAdd);
+    if AfmPolygonAdd.ShowModal=mrOk then begin
+
+      APolygonItem:=FPolygones[FIDSelectedPolygon];
+
+      with APolygonItem do begin
+        tpgPolygoneName:= AfmPolygonAdd.cxteName.Text;
+        tpgPolygoneType:= AfmPolygonAdd.cxteType.Text;
+
+        tpgLayer.MapItems.BeginUpdate;
+
+        tpgCustomElement:= tpgLayer.MapItems.Add(TdxMapCustomElement) as TdxMapCustomElement;
+        ACustomElementGeoPoint.Latitude:= tpgPolygone.GeoPoints[0].GeoPoint.Latitude;
+        ACustomElementGeoPoint.Longitude:= tpgPolygone.GeoPoints[0].GeoPoint.Longitude+0.025;
+        tpgCustomElement.Location.GeoPoint:= ACustomElementGeoPoint;
+        tpgCustomElement.Text:= tpgPolygoneName;
+        tpgCustomElement.ImageVisible:= False;
+        tpgCustomElement.Visible:= True;
+
+//        for I:=0 to triMapDot.Count-1 do begin
+//          triMapDot[I].Hint:=triRouteName;
+//          triMapDot[I].Size:= 4;
+//          triMapDot[I].Style.BorderColor:= $FFF20000;
+//          triMapDot[I].Style.BorderWidth:= 2;
+//          triMapDot[I].Style.Color:= $FFF2FF00;
+//          triMapDot[I].Visible:= True;
+//        end;
+
+        tpgPolygone.Hint:=tpgPolygoneName;
+        tpgPolygoneColor:= dxColorToAlphaColor(AfmPolygonAdd.dxceColor.ColorValue, AlphaChannel);
+        tpgPolygone.Style.Color:= tpgPolygoneColor; // SelectedColor
+        tpgPolygone.Style.BorderColor:= tpgPolygoneColor;
+        tpgPolygone.Style.BorderWidth := 3;
+        tpgPolygone.StyleHot.BorderColor:= $FFFFFFFF;
+        tpgPolygone.StyleHot.BorderWidth := 3;
+        tpgPolygone.StyleSelected.BorderColor:= $FFFFFFFF;
+        tpgPolygone.StyleSelected.BorderWidth := 3;
+
+        tpgLayer.MapItems.EndUpdate;
+      end;
+
+      FPolygones[FIDSelectedPolygon]:= APolygonItem;
+    end else begin
+      actPolygonCreateCancelExecute(Self);
+    end;
+
+    SetAllActionsFalse;
+    AfmPolygonAdd.Destroy;
+    AfmPolygonAdd:=nil;
+  end;
+
+end;
+
+procedure TMainForm.actPolygonRemoveLastPointExecute(Sender: TObject);
+begin
+  if ((FAddPolygon) and (FIDSelectedPolygon <> -1) and (FIDSelectedPolygonGeoPoint <> -1))
+  then begin
+    FPolygones[FIDSelectedPolygon].tpgLayer.MapItems.BeginUpdate;
+
+    FPolygones[FIDSelectedPolygon].tpgPolygone.GeoPoints.Delete(FIDSelectedPolygonGeoPoint);
+    FIDSelectedPolygonGeoPoint:= FIDSelectedPolygonGeoPoint - 1;
+
+    FPolygones[FIDSelectedPolygon].tpgLayer.MapItems.EndUpdate;
+  end;
+end;
+
+procedure TMainForm.actPolygonCreateCancelExecute(Sender: TObject);
+var
+  I: integer;
+begin
+  if ((FAddPolygon) and (FIDSelectedPolygon <> -1)) then begin
+    for I:=0 to FMapControl.Layers.Count-1 do begin
+      if (FMapControl.Layers[I].Equals(FPolygones[FIDSelectedPolygon].tpgLayer) = True) then begin
+        FMapControl.Layers.Delete(I);
+        Break;
+      end;
+    end;
+
+    FPolygones.Delete(FIDSelectedPolygon);
+    FPolygones.TrimExcess;
+    SetAllActionsFalse;
+  end else begin
+    (* Work when only press to menu button 'Create Route' *)
+    SetAllActionsFalse;
+  end;
+end;
+{$ENDREGION}
+
+procedure TMainForm.dxMapControl1Click(Sender: TObject);
+var
+  I : Integer;
+  FSelectedMapDot : TdxMapDot;
+begin
+
+  {$REGION 'Route'}
+  if (FEditRoute)
+      and ((FIDSelectedRouteMapDot = -1) or (FIDSelectedMiddleGeoPointItemMapDot = -1))
+      and (FMouseMoveWhenMouseDown = False)
+      and (FRoutes[FIDSelectedRoute].triMapDot.Count > 2)
+      then begin
+
+    // If selected MapDot which located above Polyline
+    if (FMapControl.HitTest.HitObject is TdxMapDotViewInfo) then begin
+      FSelectedMapDot := TdxMapDotViewInfo(FMapControl.HitTest.HitObject).Item as TdxMapDot;
+
+      // If EditRoute enable - find MapDot in edit Route
+      if (FIDSelectedRoute <> -1) then begin
+
+        // Try find selected MapDot in Polyline list
+        for I:=0 to FRoutes[FIDSelectedRoute].triMapDot.Count-1 do begin
+          if FRoutes[FIDSelectedRoute].triMapDot[I].Equals(FSelectedMapDot) then begin
+            FIDSelectedRouteMapDot := -1;
+            DeleteRoutePoint(FRoutes, FIDSelectedRoute, I);
+
+
+
+            {$REGION 'Recalculate MiddleGeoPointItem loacation'}
+            // For first point in FRoutes[I] (not in FMiddleGeoPointItem)
+            if (I = 0) then begin
+              DeleteGeoPointItemMapDot(FRoutes[FIDSelectedRoute].triLayer,
+                FMiddleGeoPointItem, I);
+              FMiddleGeoPointItem[I].Location.GeoPoint:=GetMiddleGeoPoint(
+                FRoutes[FIDSelectedRoute].triMapDot[I].Location.GeoPoint.Latitude,
+                FRoutes[FIDSelectedRoute].triMapDot[I].Location.GeoPoint.Longitude,
+                FRoutes[FIDSelectedRoute].triMapDot[I+1].Location.GeoPoint.Latitude,
+                FRoutes[FIDSelectedRoute].triMapDot[I+1].Location.GeoPoint.Longitude
+              );
+            end;
+            // Any middle point in FRoutes[I] (not in FMiddleGeoPointItem)
+            if (I > 0)
+                and (I < FRoutes[FIDSelectedRoute].triMapDot.Count) then begin
+              DeleteGeoPointItemMapDot(FRoutes[FIDSelectedRoute].triLayer,
+                FMiddleGeoPointItem, I);
+              FMiddleGeoPointItem[I-1].Location.GeoPoint:=GetMiddleGeoPoint(
+                FRoutes[FIDSelectedRoute].triMapDot[I-1].Location.GeoPoint.Latitude,
+                FRoutes[FIDSelectedRoute].triMapDot[I-1].Location.GeoPoint.Longitude,
+                FRoutes[FIDSelectedRoute].triMapDot[I].Location.GeoPoint.Latitude,
+                FRoutes[FIDSelectedRoute].triMapDot[I].Location.GeoPoint.Longitude
+              );
+            end;
+            // For last point in FRoutes[I] (not in FMiddleGeoPointItem)
+            if (I = FRoutes[FIDSelectedRoute].triMapDot.Count) then begin
+              DeleteGeoPointItemMapDot(FRoutes[FIDSelectedRoute].triLayer,
+                FMiddleGeoPointItem, I-1);
+              FMiddleGeoPointItem[I-2].Location.GeoPoint:=GetMiddleGeoPoint(
+                FRoutes[FIDSelectedRoute].triMapDot[I-2].Location.GeoPoint.Latitude,
+                FRoutes[FIDSelectedRoute].triMapDot[I-2].Location.GeoPoint.Longitude,
+                FRoutes[FIDSelectedRoute].triMapDot[I-1].Location.GeoPoint.Latitude,
+                FRoutes[FIDSelectedRoute].triMapDot[I-1].Location.GeoPoint.Longitude
+              );
+
+            end;
+            {$ENDREGION}
+
+
+            Break;
+
+
+          end;
+        end;
+
+//        // Try find selected MapDot in FMiddleGeoPointItem list
+//        for I:=0 to FMiddleGeoPointItem.Count-1 do begin
+//          if FMiddleGeoPointItem[I].Equals(FSelectedMapDot) then begin
+//            FIDSelectedMiddleGeoPointItemMapDot := I;
+//            FMapControl.OptionsBehavior.Scrolling:=False;
+//          end;
+//        end;
+
+      end;
+
+    end;
+  end;
+  {$ENDREGION}
+
+end;
+
 procedure TMainForm.dxMapControl1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  I : Integer;
+  FSelectedMapDot : TdxMapDot;
 begin
   FMouseDown:= True;
+
+  {$REGION 'Route'}
+  if (FEditRoute) and ((FIDSelectedRouteMapDot = -1) or (FIDSelectedMiddleGeoPointItemMapDot = -1)) then begin
+
+    // If selected MapDot which located above Polyline
+    if (FMapControl.HitTest.HitObject is TdxMapDotViewInfo) then begin
+      FSelectedMapDot := TdxMapDotViewInfo(FMapControl.HitTest.HitObject).Item as TdxMapDot;
+
+      // If EditRoute enable - find MapDot in edit Route
+      if (FIDSelectedRoute <> -1) then begin
+
+        // Try find selected MapDot in Polyline list
+        for I:=0 to FRoutes[FIDSelectedRoute].triMapDot.Count-1 do begin
+          if FRoutes[FIDSelectedRoute].triMapDot[I].Equals(FSelectedMapDot) then begin
+            FIDSelectedRouteMapDot := I;
+            FMapControl.OptionsBehavior.Scrolling:=False;
+          end;
+        end;
+
+        // Try find selected MapDot in FMiddleGeoPointItem list
+        for I:=0 to FMiddleGeoPointItem.Count-1 do begin
+          if FMiddleGeoPointItem[I].Equals(FSelectedMapDot) then begin
+            FIDSelectedMiddleGeoPointItemMapDot := I;
+            FMapControl.OptionsBehavior.Scrolling:=False;
+          end;
+        end;
+
+      end;
+
+    end;
+  end;
+  {$ENDREGION}
+
 end;
 
 procedure TMainForm.dxMapControl1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -704,19 +1022,35 @@ begin
 
   {$REGION 'Pushpin'}
   if ((FAddPushpin) and (FMouseMoveWhenMouseDown = False) and (Button <> TMouseButton.mbRight)) then begin
-    AddPushpin;
+    AddPushpinItemToList;
   end;
   {$ENDREGION}
 
   {$REGION 'Route'}
   if ((FAddRoute) and (FMouseMoveWhenMouseDown = False) and (Button <> TMouseButton.mbRight)) then begin
-    AddRoute;
+    AddRouteItemToList;
+  end;
+
+  if (FEditRoute) then begin
+    if ((FIDSelectedRoute <> -1) and (FIDSelectedRouteMapDot <> -1)) then begin
+      FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot].Selected:=False;
+    end;
+
+    FMapControl.OptionsBehavior.Scrolling:=True;
+    FIDSelectedRouteMapDot := -1;
+    FIDSelectedMiddleGeoPointItemMapDot := -1;
   end;
   {$ENDREGION}
 
   {$REGION 'Rectangle'}
   if ((FAddRectangle) and (FMouseMoveWhenMouseDown = False) and (Button <> TMouseButton.mbRight)) then begin
     AddRectangle;
+  end;
+  {$ENDREGION}
+
+  {$REGION 'Polygon'}
+  if ((FAddPolygon) and (FMouseMoveWhenMouseDown = False) and (Button <> TMouseButton.mbRight)) then begin
+    AddPolygon;
   end;
   {$ENDREGION}
 
@@ -733,15 +1067,93 @@ begin
   {$REGION 'Pushpin'}
   if (FIDMovePushpin <> -1) then begin
     FCurrentCursorPos:= Point(X, Y);
-    FPushpin[FIDMovePushpin].tppPushpin.Location.GeoPoint:= CurrentCursorGeoPoint;
+    FPushpin[FIDMovePushpin].tppPushpin.Location.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
   end;
   {$ENDREGION}
 
   {$REGION 'Route'}
-  if ((FAddRoute) and (FIDSelectedRoute <> -1) and (FIDSelectedMapDot <> -1))
+  if ((FAddRoute) and (FIDSelectedRoute <> -1) and (FIDSelectedRouteMapDot <> -1))
   then begin
     FCurrentCursorPos:= Point(X, Y);
-    FRoutes[FIDSelectedRoute].triPolyline.GeoPoints[FIDSelectedMapDot].GeoPoint:= CurrentCursorGeoPoint;
+    FRoutes[FIDSelectedRoute].triPolyline.GeoPoints[FIDSelectedRouteMapDot].GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+    FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot].Location.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+  end;
+
+  if ((FEditRoute) and (FIDSelectedRoute <> -1))
+  then begin
+    if (FIDSelectedRouteMapDot <> -1) then begin
+      FCurrentCursorPos:= Point(X, Y);
+      FRoutes[FIDSelectedRoute].triPolyline.GeoPoints[FIDSelectedRouteMapDot].GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+      FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot].Location.GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+
+      {$REGION 'Recalculate MiddleGeoPointItem loacation'}
+      // For first point in FRoutes[I] (not in FMiddleGeoPointItem)
+      if (FIDSelectedRouteMapDot = 0) then begin
+        FMiddleGeoPointItem[FIDSelectedRouteMapDot].Location.GeoPoint:=GetMiddleGeoPoint(
+          FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot].Location.GeoPoint.Latitude,
+          FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot].Location.GeoPoint.Longitude,
+          FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot+1].Location.GeoPoint.Latitude,
+          FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot+1].Location.GeoPoint.Longitude
+        );
+      end;
+      // Any middle point in FRoutes[I] (not in FMiddleGeoPointItem)
+      if (FIDSelectedRouteMapDot > 0)
+          and (FIDSelectedRouteMapDot < FRoutes[FIDSelectedRoute].triMapDot.Count-1) then begin
+        FMiddleGeoPointItem[FIDSelectedRouteMapDot-1].Location.GeoPoint:=GetMiddleGeoPoint(
+          FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot-1].Location.GeoPoint.Latitude,
+          FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot-1].Location.GeoPoint.Longitude,
+          FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot].Location.GeoPoint.Latitude,
+          FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot].Location.GeoPoint.Longitude
+        );
+        FMiddleGeoPointItem[FIDSelectedRouteMapDot].Location.GeoPoint:=GetMiddleGeoPoint(
+          FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot].Location.GeoPoint.Latitude,
+          FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot].Location.GeoPoint.Longitude,
+          FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot+1].Location.GeoPoint.Latitude,
+          FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot+1].Location.GeoPoint.Longitude
+        );
+      end;
+      // For last point in FRoutes[I] (not in FMiddleGeoPointItem)
+      if (FIDSelectedRouteMapDot = FRoutes[FIDSelectedRoute].triMapDot.Count-1) then begin
+        FMiddleGeoPointItem[FIDSelectedRouteMapDot-1].Location.GeoPoint:=GetMiddleGeoPoint(
+          FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot-1].Location.GeoPoint.Latitude,
+          FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot-1].Location.GeoPoint.Longitude,
+          FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot].Location.GeoPoint.Latitude,
+          FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot].Location.GeoPoint.Longitude
+        );
+      end;
+      {$ENDREGION}
+    end;
+
+    if (FIDSelectedMiddleGeoPointItemMapDot <> -1) then begin
+      // ADD new FIDSelectedRouteMapDot
+      // and DELETE FIDSelectedMiddleGeoPointItemMapDot
+      // This code must be execute one times.
+      FIDSelectedRouteMapDot := FIDSelectedMiddleGeoPointItemMapDot+1;
+      FIDSelectedMiddleGeoPointItemMapDot := -1;
+
+      FCurrentCursorPos:= Point(X, Y);
+
+      // Add new Polyline.GeoPoints
+      FRoutes[FIDSelectedRoute].triPolyline.GeoPoints.Insert(FIDSelectedRouteMapDot);
+      FRoutes[FIDSelectedRoute].triPolyline.GeoPoints[FIDSelectedRouteMapDot].GeoPoint:=
+        GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+
+      // Add new MapDot
+      FRoutes[FIDSelectedRoute].triMapDot.Insert(FIDSelectedRouteMapDot,
+        CreateMapDot(FRoutes[FIDSelectedRoute].triLayer));
+      FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot].Location.GeoPoint:=
+        GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+      FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot].ShapeKind:=mcskCircle;
+      SetMapDotItemStyle(FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot], $0000FF, $0000FF, 2, True); // RED COLOR
+
+      // Add new MiddleGeoPointItem
+      FMiddleGeoPointItem.Insert(FIDSelectedRouteMapDot-1,
+        CreateMiddleGeoPointItem(FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot-1],
+                                 FRoutes[FIDSelectedRoute].triMapDot[FIDSelectedRouteMapDot],
+                                 FRoutes[FIDSelectedRoute].triLayer));
+      FMiddleGeoPointItem[FIDSelectedRouteMapDot].Selected:=False;
+      SetMapDotItemStyle(FMiddleGeoPointItem[FIDSelectedRouteMapDot], $0000FF, $0000FF, 2, True); // RED COLOR
+    end;
   end;
   {$ENDREGION}
 
@@ -764,6 +1176,15 @@ begin
        , Y )  ));
   end;
   {$ENDREGION}
+
+  {$REGION 'Polygon'}
+  if ((FAddPolygon) and (FIDSelectedPolygon <> -1) and (FIDSelectedPolygonGeoPoint <> -1))
+  then begin
+    FCurrentCursorPos:= Point(X, Y);
+    FPolygones[FIDSelectedPolygon].tpgPolygone.GeoPoints[FIDSelectedPolygonGeoPoint].GeoPoint:= GetCurrentCursorGeoPoint(FImageTileLayer, FCurrentCursorPos);
+
+  end;
+  {$ENDREGION}
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -771,6 +1192,9 @@ var
   I: integer;
   PopupMenuItem : TMenuItem;
 begin
+  FMapControl:= dxMapControl1;
+  FImageTileLayer:= dxMapControl1ImageTileLayer1;
+
   {$REGION 'Right Click PopupMenu'}
   (* This block make full copy ppmMapControl PopupMenu.
      It is need for disable Right Mouse Click,
@@ -790,7 +1214,7 @@ begin
 
   RCPopupMenuMapControl.OnPopup:= ppmMapControlPopup;
 
-  dxMapControl1.PopupMenu:= RCPopupMenuMapControl;
+  FMapControl.PopupMenu:= RCPopupMenuMapControl;
   {$ENDREGION}
 
 
@@ -806,14 +1230,22 @@ begin
   FRectangles:=TList<RectangleItem>.Create;
   {$ENDREGION}
 
+  {$REGION 'Polygone'}
+  FPolygones:=TList<PolygonItem>.Create;
+  {$ENDREGION}
+
   SetAllActionsFalse;
 end;
 
 procedure TMainForm.ppmMapControlPopup(Sender: TObject);
+var
+  i, j : Integer;
+  FSelectedMapDot : TdxMapDot;
+  FSelectedPolyline : TdxMapPolyline;
 begin
   {$REGION 'Pushpin'}
-  if dxMapControl1.HitTest.HitObject is TdxMapPushpinViewInfo then
-    FSelectedPushpin := TdxMapPushpinViewInfo(dxMapControl1.HitTest.HitObject).Item as TdxMapPushpin
+  if FMapControl.HitTest.HitObject is TdxMapPushpinViewInfo then
+    FSelectedPushpin := TdxMapPushpinViewInfo(FMapControl.HitTest.HitObject).Item as TdxMapPushpin
   else
     FSelectedPushpin := nil;
 
@@ -824,11 +1256,6 @@ begin
   {$ENDREGION}
 
   {$REGION 'Route'}
-  if dxMapControl1.HitTest.HitObject is TdxMapDotViewInfo then
-    FSelectedMapDot := TdxMapDotViewInfo(dxMapControl1.HitTest.HitObject).Item as TdxMapDot
-  else
-    FSelectedMapDot := nil;
-
   if ((FAddRoute) and (FIDSelectedRoute <> -1)) then begin
     actRouteCreate.Visible := (FAddRoute) and (FRoutes[FIDSelectedRoute].triMapDot.Count-1 >= 1);
     actRouteRemoveLastPoint.Visible := (FAddRoute) and (FRoutes[FIDSelectedRoute].triMapDot.Count-1 >= 1);
@@ -837,11 +1264,84 @@ begin
     actRouteRemoveLastPoint.Visible := False;
   end;
   actRouteCreateCancel.Visible := (FAddRoute);
+
+
+  actRouteEdit.Visible := False; //Set false before click
+
+  // If selected MapDot which located above Polyline
+  if (FMapControl.HitTest.HitObject is TdxMapDotViewInfo) then begin
+    FSelectedMapDot := TdxMapDotViewInfo(FMapControl.HitTest.HitObject).Item as TdxMapDot;
+
+    if ((not FAddRoute) and (not FEditRoute)) then begin
+      for i:=0 to FRoutes.Count-1 do begin
+        for j:=0 to FRoutes[i].triMapDot.Count-1 do begin
+          if FRoutes[i].triMapDot[j].Equals(FSelectedMapDot) then begin
+            FIDSelectedRoute := i;
+            actRouteEdit.Visible := True;
+          end;
+        end;
+      end
+    end;
+
+    // this is code work just like menu
+//    // If EditRoute enable - find MapDot in edit Route
+//    if ((FEditRoute) and (FIDSelectedRoute <> -1)) then begin
+//
+//      // Try find selected MapDot in Polyline list
+//      for I:=0 to FRoutes[FIDSelectedRoute].triMapDot.Count-1 do begin
+//        if FRoutes[FIDSelectedRoute].triMapDot[I].Equals(FSelectedMapDot) then begin
+//          FIDSelectedRouteMapDot := I;
+//          //actRouteEdit.Visible := True;
+//        end;
+//      end;
+//
+//      // Try find selected MapDot in FMiddleGeoPointItem list
+//      for I:=0 to FMiddleGeoPointItem.Count-1 do begin
+//        if FMiddleGeoPointItem[I].mgiMapDot.Equals(FSelectedMapDot) then begin
+//          FIDSelectedMiddleGeoPointItemMapDot := I;
+//          //actRouteEdit.Visible := True;
+//        end;
+//      end;
+//
+//    end;
+
+  end;
+
+  // If selected Polyline
+  if (FMapControl.HitTest.HitObject is TdxMapPolylineViewInfo) then begin
+    FSelectedPolyline := TdxMapPolylineViewInfo(FMapControl.HitTest.HitObject).Item as TdxMapPolyline;
+
+    if ((not FAddRoute) and (not FEditRoute)) then begin
+      for i:=0 to FRoutes.Count-1 do begin
+        if FRoutes[i].triPolyline.Equals(FSelectedPolyline) then begin
+          FIDSelectedRoute := i;
+          actRouteEdit.Visible := True;
+        end;
+      end;
+    end;
+
+  end;
+
+
+
   {$ENDREGION}
 
   {$REGION 'Rectangle'}
   actRectangleCreate.Visible := (FAddRectangle) and (FRectangles[FIDSelectedRectangle].trtRectangle.GeoPoints.Count-1 >= 3);
   actRectangleCreateCancel.Visible := (FAddRectangle) and (FRectangles[FIDSelectedRectangle].trtRectangle.GeoPoints.Count-1 >= 3);
+  {$ENDREGION}
+
+  {$REGION 'Polygone'}
+  if ((FAddPolygon) and (FIDSelectedPolygon <> -1)) then begin
+    actPolygonCreate.Visible :=
+      (FAddPolygon) and (FPolygones[FIDSelectedPolygon].tpgPolygone.GeoPoints.Count-1 >= 2);
+    actPolygonRemoveLastPoint.Visible :=
+      (FAddPolygon) and (FPolygones[FIDSelectedPolygon].tpgPolygone.GeoPoints.Count-1 >= 1);
+  end else begin
+    actPolygonCreate.Visible := False;
+    actPolygonRemoveLastPoint.Visible := False;
+  end;
+  actPolygonCreateCancel.Visible := (FAddPolygon);
   {$ENDREGION}
 end;
 

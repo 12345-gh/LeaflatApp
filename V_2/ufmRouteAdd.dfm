@@ -1,10 +1,10 @@
-object fmAddPushpin: TfmAddPushpin
+object fmRouteAdd: TfmRouteAdd
   Left = 0
   Top = 0
   BorderStyle = bsDialog
-  Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1073#1091#1083#1072#1074#1082#1091
-  ClientHeight = 133
-  ClientWidth = 421
+  Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1084#1072#1088#1096#1088#1091#1090
+  ClientHeight = 160
+  ClientWidth = 425
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -33,31 +33,28 @@ object fmAddPushpin: TfmAddPushpin
   end
   object cxteType: TcxTextEdit
     Left = 112
-    Top = 50
+    Top = 82
     Properties.OnChange = cxteTypePropertiesChange
     TabOrder = 2
     Width = 257
   end
   object cxlbType: TcxLabel
     Left = 40
-    Top = 51
+    Top = 83
     Caption = #1058#1080#1087
   end
   object pButtomPanel: TPanel
     Left = 0
-    Top = 92
-    Width = 421
+    Top = 119
+    Width = 425
     Height = 41
     Align = alBottom
     TabOrder = 4
-    ExplicitLeft = 228
-    ExplicitTop = 136
-    ExplicitWidth = 185
     DesignSize = (
-      421
+      425
       41)
     object cxbtOK: TcxButton
-      Left = 255
+      Left = 259
       Top = 8
       Width = 75
       Height = 25
@@ -67,7 +64,7 @@ object fmAddPushpin: TfmAddPushpin
       OnClick = cxbtOKClick
     end
     object cxbtCancel: TcxButton
-      Left = 336
+      Left = 340
       Top = 8
       Width = 75
       Height = 25
@@ -76,5 +73,17 @@ object fmAddPushpin: TfmAddPushpin
       TabOrder = 1
       OnClick = cxbtCancelClick
     end
+  end
+  object dxceColor: TdxColorEdit
+    Left = 112
+    Top = 53
+    ColorValue = clMenuHighlight
+    TabOrder = 5
+    Width = 257
+  end
+  object cxlbColor: TcxLabel
+    Left = 40
+    Top = 55
+    Caption = #1062#1074#1077#1090
   end
 end

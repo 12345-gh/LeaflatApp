@@ -91,19 +91,25 @@
             <Form>MainForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="ufmAddPushpin.pas">
-            <Form>fmAddPushpin</Form>
+        <DCCReference Include="ufmPushpinEdit.pas">
+            <Form>fmPushpinEdit</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="ufmAddRoute.pas">
-            <Form>fmAddRoute</Form>
+        <DCCReference Include="ufmRouteAdd.pas">
+            <Form>fmRouteAdd</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="ufmAddRectangle.pas">
-            <Form>fmAddRectangle</Form>
+        <DCCReference Include="ufmRectangleAdd.pas">
+            <Form>fmRectangleAdd</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Common\RCPopupMenu.pas"/>
+        <DCCReference Include="ufmPolygonAdd.pas">
+            <Form>fmPolygonAdd</Form>
+        </DCCReference>
+        <DCCReference Include="Common\uListItemRecord.pas"/>
+        <DCCReference Include="Common\uMapItemCRUD.pas"/>
+        <DCCReference Include="Common\uListItemCRUD.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -132,12 +138,27 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="ProjectiOSDeviceResourceRules">
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
                     <Platform Name="iOSDevice64">
                         <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <RemoteDir>Contents\MacOS</RemoteDir>
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
                     </Platform>
                     <Platform Name="iOSDevice32">
                         <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                    <Platform Name="iOSSimulator">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
                     </Platform>
                 </DeployClass>
                 <DeployClass Name="ProjectOSXResource">
@@ -491,27 +512,12 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
+                <DeployClass Name="ProjectiOSDeviceResourceRules">
                     <Platform Name="iOSDevice64">
                         <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <RemoteDir>Contents\MacOS</RemoteDir>
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
                     </Platform>
                     <Platform Name="iOSDevice32">
                         <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                    <Platform Name="iOSSimulator">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
                     </Platform>
                 </DeployClass>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
